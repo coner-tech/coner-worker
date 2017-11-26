@@ -9,13 +9,17 @@ import org.coner.worker.ConerPalette
 import tornadofx.*
 
 class LogoView : View() {
+
     override val root = pane {
         vbox {
             style {
                 padding = box(8.px)
             }
-            imageview("/coner-logo/coner-logo_96.png")
+            imageview("/coner-logo/coner-logo_96.png") {
+                id = "logo"
+            }
             text(messages["title_short"]) {
+                id = "title_short"
                 textAlignment = TextAlignment.CENTER
                 font = Font.font("sans-serif", FontWeight.EXTRA_BOLD, 18.0)
                 fill = ConerPalette.LOGO_ORANGE
