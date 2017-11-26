@@ -3,10 +3,10 @@ package org.coner.worker.view
 import javafx.scene.Scene
 import javafx.stage.Stage
 import org.junit.Test
-import org.testfx.api.FxAssert
+import org.testfx.api.FxAssert.verifyThat
 import org.testfx.framework.junit.ApplicationTest
-import org.testfx.matcher.base.NodeMatchers
-import org.testfx.matcher.control.TextMatchers
+import org.testfx.matcher.base.NodeMatchers.isNotNull
+import org.testfx.matcher.control.TextMatchers.hasText
 
 class LogoViewTest : ApplicationTest() {
 
@@ -21,11 +21,11 @@ class LogoViewTest : ApplicationTest() {
 
     @Test
     fun shouldContainLogo() {
-        FxAssert.verifyThat("#logo", NodeMatchers.isNotNull())
+        verifyThat("#logo", isNotNull())
     }
 
     @Test
     fun shouldContainWorkerText() {
-        FxAssert.verifyThat("#title_short", TextMatchers.hasText("Worker"))
+        verifyThat("#title_short", hasText("Worker"))
     }
 }
