@@ -8,7 +8,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <kotlin.version>1.1.51</kotlin.version>
+        <kotlin.version>1.1.61</kotlin.version>
         <tornadofx.version>1.7.12</tornadofx.version>
         <junit.version>4.12</junit.version>
         <testfx-core.version>4.0.8-alpha</testfx-core.version>
@@ -47,7 +47,7 @@
         </dependency>
         <dependency>
             <groupId>org.testfx</groupId>
-            <artifactId>testfx-junit</artifactId> <!-- or testfx-junit5 -->
+            <artifactId>testfx-junit</artifactId>
             <version>${testfx-junit.version}</version>
             <scope>test</scope>
         </dependency>
@@ -71,7 +71,19 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
-                                <source>src/main/kotlin</source>
+                                <sourceDir>src/main/kotlin</sourceDir>
+                            </sourceDirs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDir>src/test/kotlin</sourceDir>
                             </sourceDirs>
                         </configuration>
                     </execution>
@@ -87,5 +99,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
