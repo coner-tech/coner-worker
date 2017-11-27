@@ -13,6 +13,7 @@
         <junit.version>4.12</junit.version>
         <testfx-core.version>4.0.8-alpha</testfx-core.version>
         <testfx-junit.version>4.0.8-alpha</testfx-junit.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
