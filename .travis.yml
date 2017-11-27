@@ -10,7 +10,7 @@ matrix:
 
     - os: osx
       osx_image: xcode8.2
-      env: _JAVA_OPTIONS="-Djava.awt.headless=true -Dtestfx.robot=glass -Dtestfx.headless=true -Dprism.order=sw -Dprism.text=t2k -Dtestfx.setup.timeout=2500"
+      env: _JAVA_OPTIONS="-Djava.awt.headless=true -Dtestfx.robot=glass -Dtestfx.headless=true -Dprism.order=sw -Dprism.text=t2k -Dtestfx.setup.timeout=10000"
 
 # enable Java 8u45+, see https://github.com/travis-ci/travis-ci/issues/4042
 addons:
@@ -31,6 +31,9 @@ before_script:
 script:
   - mvn verify
 
+after_success:
+  - mvn clean test jacoco:report coveralls:report
+  
 cache:
   directories:
   - $HOME/.m2
