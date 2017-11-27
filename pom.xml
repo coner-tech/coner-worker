@@ -51,6 +51,11 @@
             <version>${testfx-junit.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>openjfx-monocle</artifactId>
+            <version>LATEST</version>
+        </dependency>
     </dependencies>
 
     <build>
