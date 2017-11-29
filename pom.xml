@@ -8,11 +8,10 @@
     <packaging>jar</packaging>
 
     <properties>
-        <kotlin.version>1.1.61</kotlin.version>
+        <kotlin.version>1.2.0</kotlin.version>
         <tornadofx.version>1.7.12</tornadofx.version>
         <junit.version>4.12</junit.version>
-        <testfx-core.version>4.0.8-alpha</testfx-core.version>
-        <testfx-junit.version>4.0.8-alpha</testfx-junit.version>
+        <testfx.version>4.0.10-alpha</testfx.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -42,20 +41,9 @@
         </dependency>
         <dependency>
             <groupId>org.testfx</groupId>
-            <artifactId>testfx-core</artifactId>
-            <version>${testfx-core.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testfx</groupId>
             <artifactId>testfx-junit</artifactId>
-            <version>${testfx-junit.version}</version>
+            <version>${testfx.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testfx</groupId>
-            <artifactId>openjfx-monocle</artifactId>
-            <version>LATEST</version>
         </dependency>
     </dependencies>
 
@@ -124,4 +112,71 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>jdk9</id>
+            <activation>
+                <jdk>9</jdk>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.testfx</groupId>
+                    <artifactId>testfx-core</artifactId>
+                    <version>${testfx.version}</version>
+                    <scope>test</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.testfx</groupId>
+                            <artifactId>testfx-internal-java8</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>org.testfx</groupId>
+                    <artifactId>testfx-internal-java9</artifactId>
+                    <version>${testfx.version}</version>
+                    <scope>test</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.testfx</groupId>
+                    <artifactId>openjfx-monocle</artifactId>
+                    <version>jdk-9+181</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>jdk8</id>
+            <activation>
+                <jdk>1.8</jdk>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.testfx</groupId>
+                    <artifactId>testfx-core</artifactId>
+                    <version>${testfx.version}</version>
+                    <scope>test</scope>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.testfx</groupId>
+                            <artifactId>testfx-internal-java9</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>org.testfx</groupId>
+                    <artifactId>testfx-internal-java8</artifactId>
+                    <version>${testfx.version}</version>
+                    <scope>test</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.testfx</groupId>
+                    <artifactId>openjfx-monocle</artifactId>
+                    <version>8u76-b04</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>
