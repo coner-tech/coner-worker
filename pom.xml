@@ -188,4 +188,13 @@
             </dependencies>
         </profile>
     </profiles>
+
+    <repositories>
+        <repository>
+            <id>jcenter</id>
+            <name>Bintray jcenter</name>
+            <url>https://jcenter.bintray.com</url>
+        </repository>
+    </repositories>
+
 </project>
