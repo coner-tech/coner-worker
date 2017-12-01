@@ -1,4 +1,4 @@
-package org.coner.worker.view
+package org.coner.worker.page
 
 import javafx.geometry.Pos
 import javafx.scene.paint.Color

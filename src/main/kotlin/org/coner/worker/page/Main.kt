@@ -1,0 +1,48 @@
+package org.coner.worker.page
+
+import javafx.scene.Node
+import org.coner.worker.ConerPalette
+import org.coner.worker.model.ConnectionPreferences
+import tornadofx.*
+
+class MainView : View() {
+
+    val controller: MainController by inject()
+    lateinit var center: Node
+
+    override val root = borderpane {
+        top {
+            hbox {
+                style {
+                    background = ConerPalette.LOGO_DARK_GRAY.asBackground()
+                }
+                add(LogoView::class)
+            }
+        }
+        center(MainCenterView::class)
+    }
+
+    init {
+        title = messages["title"]
+        runLater { controller.afterInit() }
+    }
+}
+
+class MainCenterView : View() {
+    override val root = pane {  }
+}
+
+class MainController : Controller() {
+
+    fun afterInit() {
+        if (app.config.isEmpty) {
+            find(MainCenterView::class).replaceChildren{ replaceWith(ConerCoreConnectionDetailsView::class) }
+        }
+    }
+}
+
+class MainModel : ViewModel() {
+    lateinit var connectionPreferences: ConnectionPreferences
+
+
+}
