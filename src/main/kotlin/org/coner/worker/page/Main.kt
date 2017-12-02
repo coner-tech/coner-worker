@@ -29,14 +29,16 @@ class MainView : View() {
 }
 
 class MainCenterView : View() {
-    override val root = pane {  }
+    override val root = pane { }
 }
 
 class MainController : Controller() {
 
     fun afterInit() {
         if (app.config.isEmpty) {
-            find(MainCenterView::class).replaceChildren{ replaceWith(ConerCoreConnectionDetailsView::class) }
+            find(MainCenterView::class).replaceChildren { replaceWith(EstablishConnectionView::class) }
+        } else {
+            TODO("handle launch with config defined")
         }
     }
 }
