@@ -12,16 +12,13 @@ import javafx.util.converter.IntegerStringConverter
 import org.coner.core.client.ApiClient
 import org.coner.core.client.ApiException
 import org.coner.core.client.api.EventsApi
-import org.coner.core.client.model.GetEventsResponse
 import org.coner.worker.WorkerStylesheet
 import org.coner.worker.model.ConnectionPreferences
+import org.coner.worker.model.KEY_CONNECTION_PREFERENCES
 import tornadofx.*
 import java.net.URI
 
 class EstablishConnectionView : View() {
-
-    val controller: EstablishConnectionController by inject()
-    val conerCoreScope = ServiceScope(Service.ConerCore())
 
     override val root = vbox {
         label(titleProperty) {
@@ -29,8 +26,7 @@ class EstablishConnectionView : View() {
         }
         tabpane {
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-            tab(find(ServiceConnectionDetailsView::class, conerCoreScope)) {
-
+            tab(find(ConerCoreServiceConnectionDetailsView::class)) {
             }
         }
     }
@@ -40,70 +36,16 @@ class EstablishConnectionView : View() {
     }
 }
 
-class EstablishConnectionController : Controller() {
+class AttemptCustomConerCoreConnection(val applicationUri: URI, val adminUri: URI) : FXEvent()
 
-    init {
-        subscribe<CustomServiceConnectionEstablished> {
-            // TODO: dependency injection of connection preferences gateway
-            val prefs = app.config.jsonModel<ConnectionPreferences>(ConnectionPreferences::class.simpleName!!)
-            when (it.service) {
-                is Service.ConerCore -> {
-                    prefs!!.externalConerCoreServiceUri = it.applicationUri
-                }
-            }
-        }
-    }
-
-
-}
-
-class ServiceScope(val service: Service) : Scope()
-
-sealed class Service(val title: String, val model: ServiceConnectionModel = ServiceConnectionModel()) {
-    class ConerCore : Service("Coner Core") {
-
-        override fun connect() {
-            requestHealth()
-            requestEvents()
-        }
-
-        private fun requestHealth() {
-            val coreAdminApi = Rest()
-            coreAdminApi.baseURI = model.adminBaseUrl.value.toString()
-            val healthResponse = coreAdminApi.get("/healthcheck")
-            try {
-                if (healthResponse.ok()) {
-                    return
-                } else {
-                    val message = "Something went wrong. ${healthResponse.statusCode} ${healthResponse.reason}"
-                    throw ApiException(message)
-                }
-            } finally {
-                healthResponse.consume()
-            }
-        }
-
-        private fun requestEvents(): GetEventsResponse {
-            val apiClient = ApiClient()
-            apiClient.basePath = model.applicationBaseUrl.value.toString()
-            val eventsApi = EventsApi(apiClient)
-            return eventsApi.events
-        }
-    }
-
-    abstract fun connect()
-}
-
-class CustomServiceConnectionEstablished(val service: Service, val applicationUri: URI, val adminUri: URI) : FXEvent()
-
-class ServiceConnectionDetailsView : View() {
-    override val scope = super.scope as ServiceScope
+class ConerCoreServiceConnectionDetailsView : View() {
     val model: ServiceConnectionModel by inject()
+    val controller: ConerCoreServiceConnectionDetailsController by inject()
 
     override val root = form {
         hgrow = Priority.ALWAYS
         vgrow = Priority.ALWAYS
-        fieldset(scope.service.title, labelPosition = Orientation.VERTICAL) {
+        fieldset("Coner Core", labelPosition = Orientation.VERTICAL) {
             hbox {
                 spacing = 8.0
                 field(messages["field_protocol"]) {
@@ -136,18 +78,19 @@ class ServiceConnectionDetailsView : View() {
             button(messages["button_connect"], ButtonBar.ButtonData.OK_DONE) {
                 enableWhen { model.valid }
                 action {
+                    val spec = AttemptCustomConerCoreConnection(
+                            applicationUri = model.applicationBaseUrl.get()!!,
+                            adminUri = model.adminBaseUrl.get()!!
+                    )
                     runAsyncWithProgress {
-                        scope.service.connect()
+                        controller.connect(spec)
                     } success {
-                        model.commit()
-                        fire(CustomServiceConnectionEstablished(
-                                service = scope.service,
-                                applicationUri = model.applicationBaseUrl.get()!!,
-                                adminUri = model.adminBaseUrl.get()!!
-                        ))
+                        controller.saveConfig(spec)
+                        alert(Alert.AlertType.INFORMATION, "Connected")
                     } fail {
                         alert(Alert.AlertType.ERROR, "Failed to connect")
                     }
+
                 }
             }
         }
@@ -155,6 +98,40 @@ class ServiceConnectionDetailsView : View() {
 
     init {
         title = messages["title"]
+    }
+}
+
+class ConerCoreServiceConnectionDetailsController : Controller() {
+
+    fun connect(attempt: AttemptCustomConerCoreConnection) {
+        // request health
+        val coreAdminApi = Rest()
+        coreAdminApi.baseURI = attempt.adminUri.toString()
+        val healthResponse = coreAdminApi.get("/healthcheck")
+        try {
+            if (!healthResponse.ok()) {
+                val message = "Something went wrong. ${healthResponse.statusCode} ${healthResponse.reason}"
+                throw ApiException(message)
+            }
+        } finally {
+            healthResponse.consume()
+        }
+
+        // request events
+        val apiClient = ApiClient()
+        apiClient.basePath = attempt.applicationUri.toString()
+        val eventsApi = EventsApi(apiClient)
+        eventsApi.events
+    }
+
+    fun saveConfig(spec: AttemptCustomConerCoreConnection) {
+        val connectionPreferences = app.config.jsonModel(KEY_CONNECTION_PREFERENCES) ?: ConnectionPreferences()
+        connectionPreferences.method = ConnectionPreferences.Method.CUSTOM
+        connectionPreferences.customConnection = ConnectionPreferences.CustomConnection()
+        connectionPreferences.customConnection?.conerCoreAdminUri = spec.adminUri
+        connectionPreferences.customConnection?.conerCoreServiceUri = spec.applicationUri
+        app.config.set(KEY_CONNECTION_PREFERENCES to connectionPreferences)
+        app.config.save()
     }
 }
 
