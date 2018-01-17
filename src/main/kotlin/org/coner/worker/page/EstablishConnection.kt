@@ -150,6 +150,7 @@ class ServiceConnectionModel : ItemViewModel<ServiceConnection>(initialValue = S
 
 class ServiceConnection {
     val protocolProperty = SimpleStringProperty(this, "protocol", "http")
+    var protocol by protocolProperty
     val hostProperty = SimpleStringProperty(this, "host", "localhost")
     var host by hostProperty
     val applicationPortProperty = SimpleIntegerProperty(this, "applicationPort", 8080)
