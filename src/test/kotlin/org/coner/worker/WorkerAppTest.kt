@@ -1,25 +1,36 @@
 package org.coner.worker
 
-import javafx.stage.Stage
+import org.junit.AfterClass
+import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 import org.testfx.api.FxAssert.verifyThat
-import org.testfx.framework.junit.ApplicationTest
+import org.testfx.api.FxToolkit
 import org.testfx.matcher.base.NodeMatchers.isVisible
 
-class WorkerAppTest : ApplicationTest() {
+class WorkerAppTest {
 
-    lateinit var app: WorkerApp
+    companion object {
+        val app = WorkerApp()
 
-    override fun start(stage: Stage) {
-        super.start(stage)
-        app = WorkerApp()
-        app.config.clear()
-        app.start(stage)
+        @JvmStatic
+        @BeforeClass
+        fun beforeClass() {
+            FxToolkit.registerPrimaryStage()
+            FxToolkit.setupApplication { app }
+        }
+
+        @JvmStatic
+        @AfterClass
+        fun afterClass() {
+            FxToolkit.cleanupApplication(app)
+        }
+
     }
 
-    override fun stop() {
-        super.stop()
-        app.stop()
+    @Before
+    fun before() {
+        app.config.clear()
     }
 
     @Test

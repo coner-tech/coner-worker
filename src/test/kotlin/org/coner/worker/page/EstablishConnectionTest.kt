@@ -1,36 +1,55 @@
 package org.coner.worker.page
 
-import javafx.scene.Scene
 import javafx.scene.control.Button
 import javafx.scene.control.ChoiceBox
 import javafx.scene.control.TextField
 import javafx.scene.input.KeyCode
-import javafx.stage.Stage
-import org.junit.Before
-import org.junit.Test
+import org.junit.*
 import org.testfx.api.FxAssert.verifyThat
 import org.testfx.api.FxRobot
+import org.testfx.api.FxToolkit
 import org.testfx.framework.junit.ApplicationTest
 import org.testfx.matcher.base.NodeMatchers
 import org.testfx.matcher.control.TextInputControlMatchers.hasText
+import tornadofx.*
 import java.net.URI
 import kotlin.test.assertEquals
 
-class ConerCoreServiceConnectionDetailsViewTest : ApplicationTest() {
+class ConerCoreServiceConnectionDetailsViewTest {
 
+    lateinit var robot: FxRobot
+    lateinit var app: App
     lateinit var page: ConerCoreServiceConnectionDetailsPage
 
-    override fun start(stage: Stage) {
-        super.start(stage)
-        val view = ConerCoreServiceConnectionDetailsView()
-        stage.scene = Scene(view.root)
-        stage.show()
-        page = ConerCoreServiceConnectionDetailsPage(this, view)
+    companion object {
+
+
+
+        @JvmStatic
+        @BeforeClass
+        fun beforeClass() {
+
+        }
+
+        @JvmStatic
+        @AfterClass
+        fun afterClass() {
+
+        }
     }
 
-    override fun stop() {
-        super.stop()
-        page.view.scope.deregister()
+    @Before
+    fun before() {
+        app = App(ConerCoreServiceConnectionDetailsView::class)
+        val stage = FxToolkit.registerPrimaryStage()
+        FxToolkit.setupApplication { app }
+        robot = FxRobot()
+        page = ConerCoreServiceConnectionDetailsPage(robot, stage.uiComponent()!!)
+    }
+
+    @After
+    fun after() {
+        FxToolkit.cleanupApplication(app)
     }
 
     @Test
