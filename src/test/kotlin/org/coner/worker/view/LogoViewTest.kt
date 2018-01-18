@@ -2,6 +2,7 @@ package org.coner.worker.view
 
 import javafx.scene.Scene
 import javafx.stage.Stage
+import org.coner.worker.page.LogoView
 import org.junit.Test
 import org.testfx.api.FxAssert.verifyThat
 import org.testfx.framework.junit.ApplicationTest

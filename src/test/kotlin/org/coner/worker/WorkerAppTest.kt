@@ -1,20 +1,45 @@
 package org.coner.worker
 
-import javafx.stage.Stage
+import org.junit.AfterClass
+import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 import org.testfx.api.FxAssert.verifyThat
-import org.testfx.framework.junit.ApplicationTest
+import org.testfx.api.FxToolkit
 import org.testfx.matcher.base.NodeMatchers.isVisible
 
-class WorkerAppTest : ApplicationTest() {
+class WorkerAppTest {
 
-    override fun start(stage: Stage) {
-        super.start(stage)
-        WorkerApp().start(stage)
+    companion object {
+        val app = WorkerApp()
+
+        @JvmStatic
+        @BeforeClass
+        fun beforeClass() {
+            FxToolkit.registerPrimaryStage()
+            FxToolkit.setupApplication { app }
+        }
+
+        @JvmStatic
+        @AfterClass
+        fun afterClass() {
+            FxToolkit.cleanupApplication(app)
+        }
+
+    }
+
+    @Before
+    fun before() {
+        app.config.clear()
     }
 
     @Test
     fun shouldHaveLogoVisible() {
         verifyThat("#logo", isVisible())
+    }
+
+    @Test
+    fun shouldHaveEstablishConnectionVisible() {
+        verifyThat("#establish_connection", isVisible())
     }
 }

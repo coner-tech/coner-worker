@@ -1,14 +1,25 @@
 package org.coner.worker
 
+import javafx.scene.text.FontWeight
 import tornadofx.*
 
 class WorkerStylesheet : Stylesheet() {
+
+    companion object {
+        val h1 by cssclass("h1")
+    }
+
     init {
         root {
-            with (ConerPalette) {
-                accentColor = TRAFFIC_CONE_ORANGE
-                focusColor = TRAFFIC_CONE_ORANGE
+            with(ConerPalette) {
+                accentColor = LOGO_ORANGE
+                focusColor = LOGO_ORANGE
             }
+        }
+        h1 {
+            fontSize = 18.pt
+            fontWeight = FontWeight.BOLD
+            padding = box(0.px, 8.px)
         }
     }
 }

@@ -8,10 +8,11 @@
     <packaging>jar</packaging>
 
     <properties>
-        <kotlin.version>1.2.0</kotlin.version>
+        <kotlin.version>1.2.10</kotlin.version>
         <tornadofx.version>1.7.12</tornadofx.version>
         <junit.version>4.12</junit.version>
         <testfx.version>4.0.10-alpha</testfx.version>
+        <coner-core.version>0.1.28</coner-core.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -25,6 +26,12 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jre8</artifactId>
             <version>${kotlin.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.coner</groupId>
+            <artifactId>coner-core-client-java</artifactId>
+            <version>${coner-core.version}</version>
         </dependency>
 
         <dependency>
@@ -143,6 +150,7 @@
                     <groupId>org.testfx</groupId>
                     <artifactId>openjfx-monocle</artifactId>
                     <version>jdk-9+181</version>
+                    <scope>test</scope>
                 </dependency>
             </dependencies>
         </profile>
@@ -175,8 +183,18 @@
                     <groupId>org.testfx</groupId>
                     <artifactId>openjfx-monocle</artifactId>
                     <version>8u76-b04</version>
+                    <scope>test</scope>
                 </dependency>
             </dependencies>
         </profile>
     </profiles>
+
+    <repositories>
+        <repository>
+            <id>jcenter</id>
+            <name>Bintray jcenter</name>
+            <url>https://jcenter.bintray.com</url>
+        </repository>
+    </repositories>
+
 </project>
