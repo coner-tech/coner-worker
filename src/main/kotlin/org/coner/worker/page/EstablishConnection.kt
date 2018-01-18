@@ -21,12 +21,16 @@ import java.net.URI
 class EstablishConnectionView : View() {
 
     override val root = vbox {
+        id = "establish_connection"
         label(titleProperty) {
+            id = "title"
             addClass(WorkerStylesheet.h1)
         }
         tabpane {
+            id = "tabs"
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
             tab(find(ConerCoreServiceConnectionDetailsView::class)) {
+                id = "coner-core-service-connection-details-tab"
             }
         }
     }
@@ -50,16 +54,19 @@ class ConerCoreServiceConnectionDetailsView : View() {
                 spacing = 8.0
                 field(messages["field_protocol"]) {
                     choicebox(model.protocol, listOf("http", "https")) {
+                        id = "protocol"
                     }
                 }
                 field(messages["field_host"]) {
                     textfield(model.host) {
+                        id = "host"
                         required()
                         stripWhitespace()
                     }
                 }
                 field(messages["field_application_port"]) {
                     textfield(model.applicationPort) {
+                        id = "application_port"
                         required()
                         textFormatter = TextFormatter(IntegerStringConverter(), model.item.applicationPort)
                         stripNonInteger()
@@ -67,6 +74,7 @@ class ConerCoreServiceConnectionDetailsView : View() {
                 }
                 field(messages["field_admin_port"]) {
                     textfield(model.adminPort) {
+                        id = "admin_port"
                         required()
                         textFormatter = TextFormatter(IntegerStringConverter(), model.item.adminPort)
                         stripNonInteger()
@@ -76,6 +84,7 @@ class ConerCoreServiceConnectionDetailsView : View() {
         }
         buttonbar {
             button(messages["button_connect"], ButtonBar.ButtonData.OK_DONE) {
+                id = "connect"
                 enableWhen { model.valid }
                 action {
                     val spec = AttemptCustomConerCoreConnection(
