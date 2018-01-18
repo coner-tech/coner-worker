@@ -8,13 +8,27 @@ import org.testfx.matcher.base.NodeMatchers.isVisible
 
 class WorkerAppTest : ApplicationTest() {
 
+    lateinit var app: WorkerApp
+
     override fun start(stage: Stage) {
         super.start(stage)
-        WorkerApp().start(stage)
+        app = WorkerApp()
+        app.config.clear()
+        app.start(stage)
+    }
+
+    override fun stop() {
+        super.stop()
+        app.stop()
     }
 
     @Test
     fun shouldHaveLogoVisible() {
         verifyThat("#logo", isVisible())
+    }
+
+    @Test
+    fun shouldHaveEstablishConnectionVisible() {
+        verifyThat("#establish_connection", isVisible())
     }
 }
