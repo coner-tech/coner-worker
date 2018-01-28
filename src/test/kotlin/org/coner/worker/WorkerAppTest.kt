@@ -23,6 +23,7 @@ class WorkerAppTest {
         @JvmStatic
         @AfterClass
         fun afterClass() {
+            FxToolkit.cleanupStages()
             FxToolkit.cleanupApplication(app)
         }
 

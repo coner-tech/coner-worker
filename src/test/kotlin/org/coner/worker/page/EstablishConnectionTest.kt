@@ -1,10 +1,17 @@
 package org.coner.worker.page
 
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import javafx.scene.control.Button
 import javafx.scene.control.ChoiceBox
 import javafx.scene.control.TextField
 import javafx.scene.input.KeyCode
-import org.junit.*
+import org.coner.core.client.ApiException
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 import org.testfx.api.FxAssert.verifyThat
 import org.testfx.api.FxRobot
 import org.testfx.api.FxToolkit
@@ -13,6 +20,7 @@ import org.testfx.matcher.base.NodeMatchers
 import org.testfx.matcher.control.TextInputControlMatchers.hasText
 import tornadofx.*
 import java.net.URI
+import java.util.concurrent.CountDownLatch
 import kotlin.test.assertEquals
 
 class ConerCoreServiceConnectionDetailsViewTest {
@@ -20,28 +28,15 @@ class ConerCoreServiceConnectionDetailsViewTest {
     lateinit var robot: FxRobot
     lateinit var app: App
     lateinit var page: ConerCoreServiceConnectionDetailsPage
-
-    companion object {
-
-
-
-        @JvmStatic
-        @BeforeClass
-        fun beforeClass() {
-
-        }
-
-        @JvmStatic
-        @AfterClass
-        fun afterClass() {
-
-        }
-    }
+    lateinit var controller: ConerCoreServiceConnectionDetailsController
 
     @Before
     fun before() {
-        app = App(ConerCoreServiceConnectionDetailsView::class)
         val stage = FxToolkit.registerPrimaryStage()
+        stage.width = 600.0
+        controller = mockk(relaxed = true)
+        app = App(ConerCoreServiceConnectionDetailsView::class)
+        app.scope.set(controller)
         FxToolkit.setupApplication { app }
         robot = FxRobot()
         page = ConerCoreServiceConnectionDetailsPage(robot, stage.uiComponent()!!)
@@ -49,6 +44,7 @@ class ConerCoreServiceConnectionDetailsViewTest {
 
     @After
     fun after() {
+        FxToolkit.cleanupStages()
         FxToolkit.cleanupApplication(app)
     }
 
@@ -107,6 +103,48 @@ class ConerCoreServiceConnectionDetailsViewTest {
         verifyThat(page.adminPort, hasText("1234"))
     }
 
+    @Test
+    fun itShouldAttemptToConnectWhenClickConnect() {
+        val latch = CountDownLatch(1)
+        every { controller.connect(any()) }.answers { latch.countDown() }
+
+        page.connect()
+
+        latch.await()
+        var specSlot = slot<AttemptCustomConerCoreConnection>()
+        verify { controller.connect(capture(specSlot)) }
+        assertEquals(URI("http://localhost:8080"), specSlot.captured.applicationUri)
+        assertEquals(URI("http://localhost:8081"), specSlot.captured.adminUri)
+    }
+
+    @Test
+    fun itShouldNotifyControllerWhenConnectSucceeds() {
+        val latch = CountDownLatch(2)
+        every { controller.connect(any()) }.answers { latch.countDown() }
+        every { controller.onConnectSuccess(any()) }.answers { latch.countDown() }
+
+        page.connect()
+
+        latch.await()
+        var specSlot = slot<AttemptCustomConerCoreConnection>()
+        verify { controller.connect(capture(specSlot)) }
+        verify { controller.onConnectSuccess(match { it == specSlot.captured }) }
+    }
+
+    @Test
+    fun itShouldNotifyControllerWhenConnectFails() {
+        val latch = CountDownLatch(1)
+        every { controller.connect(any()) }.throws(ApiException())
+        every { controller.onConnectFail(any()) }.answers { latch.countDown() }
+
+        page.connect()
+
+        latch.await()
+        val specSlot = slot<AttemptCustomConerCoreConnection>()
+        verify { controller.connect(capture(specSlot)) }
+        verify { controller.onConnectFail(match { it == specSlot.captured }) }
+    }
+
 }
 
 class ConerCoreServiceConnectionDetailsPage(val robot: FxRobot, val view: ConerCoreServiceConnectionDetailsView) {
@@ -145,6 +183,10 @@ class ConerCoreServiceConnectionDetailsPage(val robot: FxRobot, val view: ConerC
     fun setAdminPort(text: String) {
         clearAdminPort()
         robot.write(text)
+    }
+
+    fun connect() {
+        robot.clickOn(connect)
     }
 }
 
