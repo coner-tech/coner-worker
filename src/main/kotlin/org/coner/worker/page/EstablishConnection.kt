@@ -14,7 +14,6 @@ import org.coner.core.client.ApiException
 import org.coner.core.client.api.EventsApi
 import org.coner.worker.WorkerStylesheet
 import org.coner.worker.model.ConnectionPreferences
-import org.coner.worker.model.KEY_CONNECTION_PREFERENCES
 import tornadofx.*
 import java.net.URI
 
@@ -142,12 +141,12 @@ class ConerCoreServiceConnectionDetailsController : Controller() {
     }
 
     private fun saveConfig(spec: AttemptCustomConerCoreConnection) {
-        val connectionPreferences = app.config.jsonModel(KEY_CONNECTION_PREFERENCES) ?: ConnectionPreferences()
+        val connectionPreferences = app.config.jsonModel(ConnectionPreferences.Keys.ROOT) ?: ConnectionPreferences()
         connectionPreferences.method = ConnectionPreferences.Method.CUSTOM
         connectionPreferences.customConnection = ConnectionPreferences.CustomConnection()
         connectionPreferences.customConnection?.conerCoreAdminUri = spec.adminUri
         connectionPreferences.customConnection?.conerCoreServiceUri = spec.applicationUri
-        app.config.set(KEY_CONNECTION_PREFERENCES to connectionPreferences)
+        app.config.set(ConnectionPreferences.Keys.ROOT to connectionPreferences)
         app.config.save()
     }
 }

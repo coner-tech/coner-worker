@@ -3,7 +3,6 @@ package org.coner.worker.page
 import javafx.scene.Node
 import org.coner.worker.ConerPalette
 import org.coner.worker.model.ConnectionPreferences
-import org.coner.worker.model.KEY_CONNECTION_PREFERENCES
 import tornadofx.*
 
 class MainView : View() {
@@ -36,7 +35,7 @@ class MainCenterView : View() {
 class MainController : Controller() {
 
     fun afterInit() {
-        if (app.config.jsonModel<ConnectionPreferences>(KEY_CONNECTION_PREFERENCES) == null) {
+        if (app.config.jsonModel<ConnectionPreferences>(ConnectionPreferences.Keys.ROOT) == null) {
             find(MainCenterView::class).replaceChildren { replaceWith(EstablishConnectionView::class) }
         } else {
             TODO("handle launch with config defined")
