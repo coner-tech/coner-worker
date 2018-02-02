@@ -94,12 +94,12 @@ class ConerCoreServiceConnectionDetailsView : View() {
                     runAsyncWithProgress {
                         controller.connect(spec)
                     } success {
-                        controller.saveConfig(spec)
+                        controller.onConnectSuccess(spec)
                         alert(Alert.AlertType.INFORMATION, "Connected")
                     } fail {
+                        controller.onConnectFail(spec)
                         alert(Alert.AlertType.ERROR, "Failed to connect")
                     }
-
                 }
             }
         }
@@ -133,7 +133,15 @@ class ConerCoreServiceConnectionDetailsController : Controller() {
         eventsApi.events
     }
 
-    fun saveConfig(spec: AttemptCustomConerCoreConnection) {
+    fun onConnectSuccess(spec: AttemptCustomConerCoreConnection) {
+        saveConfig(spec)
+    }
+
+    fun onConnectFail(spec: AttemptCustomConerCoreConnection) {
+        // no-op
+    }
+
+    private fun saveConfig(spec: AttemptCustomConerCoreConnection) {
         val connectionPreferences = app.config.jsonModel(KEY_CONNECTION_PREFERENCES) ?: ConnectionPreferences()
         connectionPreferences.method = ConnectionPreferences.Method.CUSTOM
         connectionPreferences.customConnection = ConnectionPreferences.CustomConnection()
