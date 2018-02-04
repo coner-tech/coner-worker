@@ -69,6 +69,7 @@ class ConerCoreServiceConnectionDetailsView : View() {
                         required()
                         textFormatter = TextFormatter(IntegerStringConverter(), model.item.applicationPort)
                         stripNonInteger()
+                        filterInput { it.controlNewText.isInt() }
                     }
                 }
                 field(messages["field_admin_port"]) {
@@ -77,6 +78,7 @@ class ConerCoreServiceConnectionDetailsView : View() {
                         required()
                         textFormatter = TextFormatter(IntegerStringConverter(), model.item.adminPort)
                         stripNonInteger()
+                        filterInput { it.controlNewText.isInt() }
                     }
                 }
             }
