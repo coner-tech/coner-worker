@@ -1,12 +1,16 @@
 package org.coner.worker
 
+import com.google.inject.Guice
 import javafx.application.Application
 import javafx.scene.image.Image
 import javafx.stage.Stage
 import org.coner.worker.page.MainView
 import tornadofx.*
+import kotlin.reflect.KClass
 
-class WorkerApp: App(MainView::class, WorkerStylesheet::class) {
+class WorkerApp : App(MainView::class, WorkerStylesheet::class) {
+
+    val guice = Guice.createInjector(AppModule())
 
     override fun start(stage: Stage) {
         super.start(stage)
@@ -16,6 +20,14 @@ class WorkerApp: App(MainView::class, WorkerStylesheet::class) {
         )
         FX.primaryStage.minWidth = 512.0
         FX.primaryStage.minHeight = 512.0
+    }
+
+    init {
+        FX.dicontainer = object : DIContainer {
+            override fun <T : Any> getInstance(type: KClass<T>): T {
+                return guice.getInstance(type.java)
+            }
+        }
     }
 }
 

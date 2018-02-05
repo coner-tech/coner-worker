@@ -11,11 +11,13 @@
         <kotlin.version>1.2.21</kotlin.version>
         <tornadofx.version>1.7.15-SNAPSHOT</tornadofx.version>
         <apache-commons-lang3.version>3.7</apache-commons-lang3.version>
+        <apache-commons-io.version>2.6</apache-commons-io.version>
         <junit.version>4.12</junit.version>
         <testfx.version>4.0.11-alpha</testfx.version>
         <jsonassert.version>1.5.0</jsonassert.version>
         <coner-core.version>0.1.28</coner-core.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <guice.version>4.1.0</guice.version>
     </properties>
 
     <dependencies>
@@ -33,6 +35,16 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${apache-commons-lang3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>${guice.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${apache-commons-io.version}</version>
         </dependency>
 
         <dependency>
@@ -70,6 +82,11 @@
             <artifactId>jsonassert</artifactId>
             <version>${jsonassert.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.authzee.kotlinguice4</groupId>
+            <artifactId>kotlin-guice</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 
