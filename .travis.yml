@@ -8,9 +8,14 @@ matrix:
       dist: trusty
       jdk: oraclejdk8
 
-    - os: linux
-      dist: trusty
-      jdk: oraclejdk9
+# DO NOT MERGE THIS COMMENTED CHUNK
+#
+# Disabling Java 9 temporarily until Coner Core service is updated to support it.
+# See https://github.com/caeos/coner-core/issues/204
+#
+#    - os: linux
+#      dist: trusty
+#      jdk: oraclejdk9
 
 # skip install
 install: true
