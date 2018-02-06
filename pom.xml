@@ -15,7 +15,7 @@
         <junit.version>4.12</junit.version>
         <testfx.version>4.0.11-alpha</testfx.version>
         <jsonassert.version>1.5.0</jsonassert.version>
-        <coner-core.version>0.1.28</coner-core.version>
+        <coner-core.version>0.1.21</coner-core.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <guice.version>4.1.0</guice.version>
     </properties>
@@ -150,6 +150,46 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <id>prepare-integration-test-environment</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>${project.basedir}/it/</workingDirectory>
+                            <executable>sh</executable>
+                            <arguments>
+                                <argument>prepare.sh</argument>
+                                <argument>${coner-core.version}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.20.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <coner-core.version>${coner-core.version}</coner-core.version>
+                            </systemPropertyVariables>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
