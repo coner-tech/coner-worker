@@ -8,6 +8,19 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+
+/**
+ * Test for ConerCoreProcess
+ *
+ * WARNING: this test depends on the core service jar existing at `pathToJar` relative to the project root, and the
+ * version passed in either as an environment variable or system property.
+ *
+ * Maven will set up the dependencies during `pre-integration-test`, and the POM configures the Failsafe plugin to
+ * pass the needed path property during `integration-test`.
+ *
+ * IntelliJ users: run `./mvnw pre-integration-test` before attempting to run this test in IntelliJ. Also, configure
+ * your Run Configuration for this test to pass the needed version in as an environment variable.
+**/
 class ConerCoreProcessIT {
 
     companion object {
@@ -16,16 +29,6 @@ class ConerCoreProcessIT {
         val settings: ConerCoreProcess.Settings
 
         init {
-            /*
-            WARNING: this test depends on the core service jar existing at `pathToJar` relative to
-            the project root, and the version passed in either as an environment variable or system property.
-
-            Maven will set up the dependencies during `pre-integration-test`, and the POM configures the Failsafe
-            plugin to pass the needed path property during `integration-test`.
-
-            IntelliJ users: run `./mvnw pre-integration-test` before attempting to run this test in IntelliJ. Also,
-            configure your Run Configuration for this test to pass the needed version in as an environment variable.
-             */
             val version = System.getenv(VERSION_PROPERTY) ?: System.getProperty(VERSION_PROPERTY)
             settings = ConerCoreProcess.Settings(
                     pathToJar = "it/environment/coner-core-service-$version.jar",
