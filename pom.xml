@@ -121,6 +121,7 @@
                         <configuration>
                             <sourceDirs>
                                 <sourceDir>src/test/kotlin</sourceDir>
+                                <sourceDir>src/integrationTest/kotlin</sourceDir>
                             </sourceDirs>
                         </configuration>
                     </execution>
@@ -186,6 +187,7 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
+                            <testSourceDirectory>${project.basedir}/src/integrationTest/kotlin</testSourceDirectory>
                             <systemPropertyVariables>
                                 <coner-core.version>${coner-core.version}</coner-core.version>
                             </systemPropertyVariables>
