@@ -1,36 +1,39 @@
 package org.coner.worker.process
 
+import com.google.common.base.Preconditions
+import io.reactivex.Completable
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import javax.inject.Inject
 
-class ConerCoreProcess @Inject constructor(private val processBuilder: ProcessBuilder) : ManagedProcess {
+class ConerCoreProcess @Inject constructor(private val processBuilder: ProcessBuilder) : ManagedProcess() {
+    override val started: Boolean
+        get() = process?.isAlive == true
 
-    var process: Process? = null
+    private var process: Process? = null
 
     init {
         processBuilder.redirectErrorStream(true)
     }
 
     fun configure(settings: Settings) {
-        if (process != null) throw UnsupportedOperationException("Can't change settings after starting process")
+        Preconditions.checkState(!started || process == null, "Can't change settings after starting process")
         processBuilder.command(
                 "java", "-jar", settings.pathToJar, "server", settings.pathToConfig
         )
     }
 
-    override fun start() {
-        if (process != null) throw UnsupportedOperationException("Can't start while starting or started")
+    override fun start(): Completable = Completable.fromAction {
+        Preconditions.checkState(process == null, "Process already started")
         process = processBuilder.start()
-        var servicesStarted = false
+        var verifiedStarted = false
         val buffer = BufferedReader(InputStreamReader(process!!.inputStream))
         var line: String?
-        // TODO: timeout, nonblocking, callback for server started?
-        while (!servicesStarted && process!!.isAlive) {
+        while (!verifiedStarted && process!!.isAlive) {
             line = buffer.readLine()
-            servicesStarted = line.contains("org.eclipse.jetty.server.Server: Started")
+            verifiedStarted = line.contains("org.eclipse.jetty.server.Server: Started")
         }
-        if (!servicesStarted) throw IllegalStateException("Service failed to start")
+        if (!verifiedStarted) throw ManagedProcess.FailedToStartException(this)
     }
 
     override fun stop() {

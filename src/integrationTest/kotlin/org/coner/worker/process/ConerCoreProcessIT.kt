@@ -6,7 +6,7 @@ import org.junit.BeforeClass
 import org.junit.Test
 import java.nio.file.Files
 import java.nio.file.Paths
-import kotlin.test.assertNull
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
@@ -54,13 +54,15 @@ class ConerCoreProcessIT {
 
     @Test
     fun itShouldStartAndStopService() {
-        conerCoreProcess.configure(settings)
-        conerCoreProcess.start()
+        assertFalse(conerCoreProcess.started)
 
-        assertTrue(conerCoreProcess.process!!.isAlive)
+        conerCoreProcess.configure(settings)
+        conerCoreProcess.start().blockingAwait()
+
+        assertTrue(conerCoreProcess.started)
 
         conerCoreProcess.stop()
 
-        assertNull(conerCoreProcess.process)
+        assertFalse(conerCoreProcess.started)
     }
 }

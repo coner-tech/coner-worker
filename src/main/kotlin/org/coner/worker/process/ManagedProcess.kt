@@ -1,8 +1,16 @@
 package org.coner.worker.process
 
-interface ManagedProcess {
+import io.reactivex.Completable
 
-    fun start()
+abstract class ManagedProcess {
 
-    fun stop()
+    abstract fun start(): Completable
+
+    abstract fun stop()
+
+    abstract val started: Boolean
+
+    class FailedToStartException(managedProcess: ManagedProcess) : Exception() {
+        override val message: String = "Failed to start process: ${managedProcess::class.simpleName}"
+    }
 }

@@ -12,6 +12,8 @@
         <tornadofx.version>1.7.15-SNAPSHOT</tornadofx.version>
         <apache-commons-lang3.version>3.7</apache-commons-lang3.version>
         <apache-commons-io.version>2.6</apache-commons-io.version>
+        <rxjava2.version>2.1.9</rxjava2.version>
+        <rxkotlin2.version>2.2.0</rxkotlin2.version>
         <junit.version>4.12</junit.version>
         <testfx.version>4.0.11-alpha</testfx.version>
         <jsonassert.version>1.5.0</jsonassert.version>
@@ -45,6 +47,16 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${apache-commons-io.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.reactivex.rxjava2</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>${rxjava2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.reactivex.rxjava2</groupId>
+            <artifactId>rxkotlin</artifactId>
+            <version>${rxkotlin2.version}</version>
         </dependency>
 
         <dependency>
