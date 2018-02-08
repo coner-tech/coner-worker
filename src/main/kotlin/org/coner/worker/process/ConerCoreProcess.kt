@@ -23,7 +23,7 @@ class ConerCoreProcess @Inject constructor(private val processBuilder: ProcessBu
         )
     }
 
-    override fun start(): Completable = Completable.fromAction {
+    override fun start() = Completable.fromAction {
         Preconditions.checkState(process == null, "Process already started")
         process = processBuilder.start()
         var verifiedStarted = false
@@ -36,7 +36,7 @@ class ConerCoreProcess @Inject constructor(private val processBuilder: ProcessBu
         if (!verifiedStarted) throw ManagedProcess.FailedToStartException(this)
     }
 
-    override fun stop() {
+    override fun stop() = Completable.fromAction {
         process?.destroy()
         process = null
     }

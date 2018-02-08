@@ -61,7 +61,7 @@ class ConerCoreProcessIT {
 
         assertTrue(conerCoreProcess.started)
 
-        conerCoreProcess.stop()
+        conerCoreProcess.stop().blockingAwait()
 
         assertFalse(conerCoreProcess.started)
     }

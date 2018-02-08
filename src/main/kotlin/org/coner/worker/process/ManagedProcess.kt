@@ -6,7 +6,7 @@ abstract class ManagedProcess {
 
     abstract fun start(): Completable
 
-    abstract fun stop()
+    abstract fun stop(): Completable
 
     abstract val started: Boolean
 
