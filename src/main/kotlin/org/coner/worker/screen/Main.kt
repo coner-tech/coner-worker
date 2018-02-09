@@ -1,4 +1,4 @@
-package org.coner.worker.page
+package org.coner.worker.screen
 
 import javafx.scene.Node
 import org.coner.worker.ConerPalette

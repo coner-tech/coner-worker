@@ -1,14 +1,11 @@
-package org.coner.worker.page
+package org.coner.worker.screen
 
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import javafx.scene.control.Button
-import javafx.scene.control.ChoiceBox
-import javafx.scene.control.TextField
-import javafx.scene.input.KeyCode
 import org.coner.core.client.ApiException
+import org.coner.worker.page.ConerCoreServiceConnectionDetailsPage
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -145,49 +142,6 @@ class ConerCoreServiceConnectionDetailsViewTest {
         verify { controller.onConnectFail(match { it == specSlot.captured }) }
     }
 
-}
-
-class ConerCoreServiceConnectionDetailsPage(val robot: FxRobot, val view: ConerCoreServiceConnectionDetailsView) {
-
-    val protocol: ChoiceBox<String> = robot.lookup("#protocol").query()
-    val applicationPort: TextField = robot.lookup("#application_port").query()
-    val adminPort: TextField = robot.lookup("#admin_port").query()
-    val host: TextField = robot.lookup("#host").query()
-    val connect: Button = robot.lookup("#connect").query()
-
-    fun clearHost() {
-        robot.doubleClickOn(host)
-        robot.type(KeyCode.BACK_SPACE)
-    }
-
-    fun setHost(text: String) {
-        clearHost()
-        robot.write(text)
-    }
-
-    fun clearApplicationPort() {
-        robot.doubleClickOn(applicationPort)
-        robot.type(KeyCode.BACK_SPACE)
-    }
-
-    fun setApplicationPort(text: String) {
-        clearApplicationPort()
-        robot.write(text)
-    }
-
-    fun clearAdminPort() {
-        robot.doubleClickOn(adminPort)
-        robot.type(KeyCode.BACK_SPACE)
-    }
-
-    fun setAdminPort(text: String) {
-        clearAdminPort()
-        robot.write(text)
-    }
-
-    fun connect() {
-        robot.clickOn(connect)
-    }
 }
 
 class ServiceConnectionModelTest : ApplicationTest() {

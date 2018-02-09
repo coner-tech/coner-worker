@@ -4,7 +4,7 @@ import com.google.inject.Guice
 import javafx.application.Application
 import javafx.scene.image.Image
 import javafx.stage.Stage
-import org.coner.worker.page.MainView
+import org.coner.worker.screen.MainView
 import tornadofx.*
 import kotlin.reflect.KClass
 
