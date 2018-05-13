@@ -8,12 +8,14 @@ import javafx.scene.control.ButtonBar
 import javafx.scene.control.TabPane
 import javafx.scene.control.TextFormatter
 import javafx.scene.layout.Priority
+import javafx.stage.FileChooser
 import javafx.util.converter.IntegerStringConverter
 import org.coner.core.client.ApiClient
 import org.coner.core.client.ApiException
 import org.coner.core.client.api.EventsApi
 import org.coner.worker.WorkerStylesheet
 import org.coner.worker.model.ConnectionPreferences
+import org.coner.worker.process.ConerCoreProcess
 import tornadofx.*
 import java.net.URI
 
@@ -28,6 +30,9 @@ class EstablishConnectionView : View() {
         tabpane {
             id = "tabs"
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+            tab(find<ConerEasyModeConnectionDetailsView>()) {
+
+            }
             tab(find(ConerCoreServiceConnectionDetailsView::class)) {
                 id = "coner-core-service-connection-details-tab"
             }
@@ -37,6 +42,65 @@ class EstablishConnectionView : View() {
     init {
         title = messages["title"]
     }
+}
+
+class ConerEasyModeConnectionDetailsView : View() {
+    val model by inject<ConerEasyModeConnectionDetailsModel>()
+    val controller by inject<ConerEasyModeConnectionDetailsController>()
+    override val root = form {
+        fieldset(messages["coner_core"]) {
+            field(messages["path_to_jar"]) {
+                hbox(spacing = 10) {
+                    textfield(model.pathToJar) {
+                        hgrow = Priority.ALWAYS
+                    }
+                    button(messages["select"]) {
+                        action {
+                            val filters = arrayOf(
+                                    FileChooser.ExtensionFilter(messages["filter_jar_description"], "*.jar")
+                            )
+                            val file = chooseFile(messages["path_to_jar"], filters).firstOrNull()
+                            model.pathToJar.value = file?.toString()
+                        }
+                    }
+                }
+            }
+            field(messages["path_to_config"]) {
+                hbox(spacing = 10) {
+                    textfield(model.pathToConfig) {
+                        hgrow = Priority.ALWAYS
+                    }
+                    button(messages["select"]) {
+                        action {
+                            val file = chooseFile(title = messages["path_to_config"], filters = emptyArray()).firstOrNull()
+                            model.pathToConfig.value = file?.toString()
+                        }
+                    }
+                }
+            }
+            button(messages["connect"]) {
+                action {
+                    runAsyncWithProgress {
+                        controller.startCoreProcess()
+                    }
+                }
+            }
+        }
+    }
+
+    init {
+        title = messages["title"]
+    }
+}
+
+class ConerEasyModeConnectionDetailsModel : ItemViewModel<ConerCoreProcess.Settings>() {
+    val pathToJar = bind(ConerCoreProcess.Settings::pathToJar)
+    val pathToConfig = bind(ConerCoreProcess.Settings::pathToConfig)
+}
+
+class ConerEasyModeConnectionDetailsController : Controller() {
+    val model by inject<ConerEasyModeConnectionDetailsModel>()
+    val coreProcess by di<ConerCoreProcess>()
 }
 
 class AttemptCustomConerCoreConnection(val applicationUri: URI, val adminUri: URI) : FXEvent()

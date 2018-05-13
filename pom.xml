@@ -8,7 +8,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <kotlin.version>1.2.21</kotlin.version>
+        <kotlin.version>1.2.41</kotlin.version>
         <tornadofx.version>1.7.15-SNAPSHOT</tornadofx.version>
         <apache-commons-lang3.version>3.7</apache-commons-lang3.version>
         <apache-commons-io.version>2.6</apache-commons-io.version>
