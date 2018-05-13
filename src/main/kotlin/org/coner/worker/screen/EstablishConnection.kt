@@ -47,6 +47,7 @@ class EstablishConnectionView : View() {
 class ConerEasyModeConnectionDetailsView : View() {
     val model by inject<ConerEasyModeConnectionDetailsModel>()
     val controller by inject<ConerEasyModeConnectionDetailsController>()
+    val coreServiceConnectionDetailsController by inject<ConerCoreServiceConnectionDetailsController>()
     override val root = form {
         fieldset(messages["coner_core"]) {
             field(messages["path_to_jar"]) {
@@ -80,8 +81,17 @@ class ConerEasyModeConnectionDetailsView : View() {
             }
             button(messages["connect"]) {
                 action {
+                    val spec = AttemptCustomConerCoreConnection(
+                            applicationUri = URI("http://localhost:8080"),
+                            adminUri = URI("http://localhost:8081")
+                    )
                     runAsyncWithProgress {
                         controller.startCoreProcess()
+                        coreServiceConnectionDetailsController.connect(spec)
+                    } success {
+                        coreServiceConnectionDetailsController.onConnectSuccess(spec)
+                    } fail {
+                        coreServiceConnectionDetailsController.onConnectFail(spec)
                     }
                 }
             }
@@ -101,6 +111,11 @@ class ConerEasyModeConnectionDetailsModel : ItemViewModel<ConerCoreProcess.Setti
 class ConerEasyModeConnectionDetailsController : Controller() {
     val model by inject<ConerEasyModeConnectionDetailsModel>()
     val coreProcess by di<ConerCoreProcess>()
+
+    fun startCoreProcess() {
+        if (coreProcess.started) coreProcess.stop()
+        coreProcess.start().blockingAwait()
+    }
 }
 
 class AttemptCustomConerCoreConnection(val applicationUri: URI, val adminUri: URI) : FXEvent()
