@@ -9,7 +9,7 @@
 
     <properties>
         <kotlin.version>1.2.41</kotlin.version>
-        <tornadofx.version>1.7.15-SNAPSHOT</tornadofx.version>
+        <tornadofx.version>1.7.16</tornadofx.version>
         <apache-commons-lang3.version>3.7</apache-commons-lang3.version>
         <apache-commons-io.version>2.6</apache-commons-io.version>
         <rxjava2.version>2.1.9</rxjava2.version>
