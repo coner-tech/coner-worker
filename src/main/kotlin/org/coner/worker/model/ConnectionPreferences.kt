@@ -61,6 +61,7 @@ class ConnectionPreferences : JsonModel {
     }
 
     enum class Method {
+        EASY_MODE,
         CUSTOM
     }
 

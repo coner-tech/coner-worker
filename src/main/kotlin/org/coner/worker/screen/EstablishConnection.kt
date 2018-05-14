@@ -91,6 +91,7 @@ class ConerEasyModeConnectionDetailsView : View() {
                     } success {
                         coreServiceConnectionDetailsController.onConnectSuccess(spec)
                     } fail {
+                        alert(Alert.AlertType.ERROR, "Failed to connect", it.stackTrace.joinToString("\n"))
                         coreServiceConnectionDetailsController.onConnectFail(spec)
                     }
                 }
@@ -114,6 +115,8 @@ class ConerEasyModeConnectionDetailsController : Controller() {
 
     fun startCoreProcess() {
         if (coreProcess.started) coreProcess.stop()
+        val settings = ConerCoreProcess.Settings(model.pathToJar.value, model.pathToConfig.value)
+        coreProcess.configure(settings)
         coreProcess.start().blockingAwait()
     }
 }
