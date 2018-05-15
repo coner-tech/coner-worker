@@ -4,10 +4,10 @@ import javafx.scene.control.Button
 import javafx.scene.control.ChoiceBox
 import javafx.scene.control.TextField
 import javafx.scene.input.KeyCode
-import org.coner.worker.screen.ConerCoreServiceConnectionDetailsView
+import org.coner.worker.screen.establish_connection.CustomConnectionView
 import org.testfx.api.FxRobot
 
-class ConerCoreServiceConnectionDetailsPage(val robot: FxRobot, val view: ConerCoreServiceConnectionDetailsView) {
+class ConerCoreServiceConnectionDetailsPage(val robot: FxRobot, val view: CustomConnectionView) {
 
     val protocol: ChoiceBox<String> = robot.lookup("#protocol").query()
     val applicationPort: TextField = robot.lookup("#application_port").query()

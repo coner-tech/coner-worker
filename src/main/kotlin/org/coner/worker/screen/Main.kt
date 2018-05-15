@@ -3,6 +3,7 @@ package org.coner.worker.screen
 import javafx.scene.Node
 import org.coner.worker.ConerPalette
 import org.coner.worker.model.ConnectionPreferences
+import org.coner.worker.screen.establish_connection.EstablishConnectionView
 import tornadofx.*
 
 class MainView : View() {

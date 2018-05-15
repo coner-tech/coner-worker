@@ -1,4 +1,4 @@
-package org.coner.worker.screen
+package org.coner.worker.screen.view
 
 import io.mockk.every
 import io.mockk.mockk
@@ -6,33 +6,35 @@ import io.mockk.slot
 import io.mockk.verify
 import org.coner.core.client.ApiException
 import org.coner.worker.page.ConerCoreServiceConnectionDetailsPage
+import org.coner.worker.screen.establish_connection.CustomConnectionController
+import org.coner.worker.screen.establish_connection.AttemptCustomConerCoreConnection
+import org.coner.worker.screen.establish_connection.CustomConnectionView
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.testfx.api.FxAssert.verifyThat
+import org.testfx.api.FxAssert
 import org.testfx.api.FxRobot
 import org.testfx.api.FxToolkit
-import org.testfx.framework.junit.ApplicationTest
 import org.testfx.matcher.base.NodeMatchers
-import org.testfx.matcher.control.TextInputControlMatchers.hasText
+import org.testfx.matcher.control.TextInputControlMatchers
 import tornadofx.*
 import java.net.URI
 import java.util.concurrent.CountDownLatch
 import kotlin.test.assertEquals
 
-class ConerCoreServiceConnectionDetailsViewTest {
+class CustomConnectionViewTest {
 
     lateinit var robot: FxRobot
     lateinit var app: App
     lateinit var page: ConerCoreServiceConnectionDetailsPage
-    lateinit var controller: ConerCoreServiceConnectionDetailsController
+    lateinit var controller: CustomConnectionController
 
     @Before
     fun before() {
         val stage = FxToolkit.registerPrimaryStage()
         stage.width = 600.0
         controller = mockk(relaxed = true)
-        app = App(ConerCoreServiceConnectionDetailsView::class)
+        app = App(CustomConnectionView::class)
         app.scope.set(controller)
         FxToolkit.setupApplication { app }
         robot = FxRobot()
@@ -48,56 +50,56 @@ class ConerCoreServiceConnectionDetailsViewTest {
     @Test
     fun itShouldStartWithDefaultValues() {
         // TODO: verify protocol
-        verifyThat(page.host, hasText("localhost"))
-        verifyThat(page.applicationPort, hasText("8080"))
-        verifyThat(page.adminPort, hasText("8081"))
+        FxAssert.verifyThat(page.host, TextInputControlMatchers.hasText("localhost"))
+        FxAssert.verifyThat(page.applicationPort, TextInputControlMatchers.hasText("8080"))
+        FxAssert.verifyThat(page.adminPort, TextInputControlMatchers.hasText("8081"))
     }
 
     @Test
     fun itShouldStartWithConnectEnabled() {
-        verifyThat(page.connect, NodeMatchers.isEnabled())
+        FxAssert.verifyThat(page.connect, NodeMatchers.isEnabled())
     }
 
     @Test
     fun itShouldDisableConnectWhenHostEmpty() {
         page.clearHost()
 
-        verifyThat(page.connect, NodeMatchers.isDisabled())
+        FxAssert.verifyThat(page.connect, NodeMatchers.isDisabled())
     }
 
     @Test
     fun itShouldStripWhitespaceFromHost() {
         page.setHost("foo bar")
 
-        verifyThat(page.host, hasText("foobar"))
+        FxAssert.verifyThat(page.host, TextInputControlMatchers.hasText("foobar"))
     }
 
     @Test
     fun itShouldDisableConnectWhenApplicationPortEmpty() {
         page.clearApplicationPort()
 
-        verifyThat(page.connect, NodeMatchers.isDisabled())
+        FxAssert.verifyThat(page.connect, NodeMatchers.isDisabled())
     }
 
     @Test
     fun itShouldStripNonIntegerFromApplicationPort() {
         page.setApplicationPort("a.!@1234")
 
-        verifyThat(page.applicationPort, hasText("1234"))
+        FxAssert.verifyThat(page.applicationPort, TextInputControlMatchers.hasText("1234"))
     }
 
     @Test
     fun itShouldDisableConnectWhenAdminPortEmpty() {
         page.clearAdminPort()
 
-        verifyThat(page.connect, NodeMatchers.isDisabled())
+        FxAssert.verifyThat(page.connect, NodeMatchers.isDisabled())
     }
 
     @Test
     fun itShouldStripNonIntegerFromAdminPort() {
         page.setAdminPort("a.!@#1234")
 
-        verifyThat(page.adminPort, hasText("1234"))
+        FxAssert.verifyThat(page.adminPort, TextInputControlMatchers.hasText("1234"))
     }
 
     @Test
@@ -142,37 +144,4 @@ class ConerCoreServiceConnectionDetailsViewTest {
         verify { controller.onConnectFail(match { it == specSlot.captured }) }
     }
 
-}
-
-class ServiceConnectionModelTest : ApplicationTest() {
-
-    private lateinit var serviceConnectionModel: ServiceConnectionModel
-
-    @Before
-    fun setup() {
-        serviceConnectionModel = ServiceConnectionModel()
-        serviceConnectionModel.item = ServiceConnection()
-    }
-
-    @Test
-    fun itShouldBuildApplicationUri() {
-        with(serviceConnectionModel.item) {
-            protocol = "http"
-            host = "foo"
-            applicationPort = 1234
-        }
-
-        assertEquals(URI("http://foo:1234"), serviceConnectionModel.applicationBaseUrl.value)
-    }
-
-    @Test
-    fun itShouldBuildAdminUri() {
-        with(serviceConnectionModel.item) {
-            protocol = "http"
-            host = "foo"
-            adminPort = 2345
-        }
-
-        assertEquals(URI("http://foo:2345"), serviceConnectionModel.adminBaseUrl.value)
-    }
 }
