@@ -9,11 +9,14 @@ import javafx.util.converter.IntegerStringConverter
 import org.coner.core.client.ApiClient
 import org.coner.core.client.ApiException
 import org.coner.core.client.api.EventsApi
-import org.coner.worker.model.ConnectionPreferences
+import org.coner.worker.ConnectionPreferencesController
+import org.coner.worker.ConnectionPreferencesModel
 import tornadofx.*
 import java.net.URI
 
 class CustomConnectionController : Controller() {
+
+    val connectionPreferencesController by inject<ConnectionPreferencesController>()
 
     fun connect(attempt: AttemptCustomConerCoreConnection) {
         // request health
@@ -37,23 +40,17 @@ class CustomConnectionController : Controller() {
     }
 
     fun onConnectSuccess(spec: AttemptCustomConerCoreConnection) {
-        saveConfig(spec)
+        val connectionPreferences = ConnectionPreferencesModel()
+        connectionPreferences.value = ConnectionPreferencesModel.Mode.Custom().apply {
+            conerCoreServiceUri = spec.applicationUri
+            conerCoreAdminUri = spec.adminUri
+        }
+        connectionPreferencesController.connectionPreferences = connectionPreferences
     }
 
     fun onConnectFail(spec: AttemptCustomConerCoreConnection) {
         // no-op
     }
-
-    private fun saveConfig(spec: AttemptCustomConerCoreConnection) {
-        val connectionPreferences = app.config.jsonModel(ConnectionPreferences.Keys.ROOT) ?: ConnectionPreferences()
-        connectionPreferences.method = ConnectionPreferences.Method.CUSTOM
-        connectionPreferences.customConnection = ConnectionPreferences.CustomConnection()
-        connectionPreferences.customConnection?.conerCoreAdminUri = spec.adminUri
-        connectionPreferences.customConnection?.conerCoreServiceUri = spec.applicationUri
-        app.config.set(ConnectionPreferences.Keys.ROOT to connectionPreferences)
-        app.config.save()
-    }
-
 }
 
 
