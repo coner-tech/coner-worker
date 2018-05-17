@@ -7,102 +7,92 @@ import tornadofx.*
 import java.net.URI
 import javax.json.JsonObject
 
-class ConnectionPreferencesModel : JsonModel {
+class ConnectionPreferencesController : Controller() {
 
-    var value by singleAssign<Mode>()
+    val modeProperty = SimpleObjectProperty<ConnectionModePreference>()
+    var mode by modeProperty
 
-    override fun toJSON(json: JsonBuilder) {
-        with(json) {
-            add("mode", value::class.simpleName)
-            add("value", value)
+    init {
+        load()
+        modeProperty.onChange { save(it) }
+    }
+
+    private fun load() {
+        mode = when (config.string("type")) {
+            "easy" -> config.jsonModel<ConnectionModePreference.Easy>("mode")
+            "custom" -> config.jsonModel<ConnectionModePreference.Custom>("mode")
+            else -> ConnectionModePreference.None()
         }
     }
 
-    override fun updateModel(json: JsonObject) {
-        with(json) {
-            val mode = string("mode") ?: ""
-            value = when(mode) {
-                Mode.Easy::class.simpleName -> getJsonObject("value").toModel<Mode.Easy>()
-                Mode.Custom::class.simpleName -> getJsonObject("value").toModel<Mode.Custom>()
-                else -> DEFAULT.value
-            }
+    private fun save(mode: ConnectionModePreference?) {
+        val type = when (mode) {
+            is ConnectionModePreference.Easy -> "easy"
+            is ConnectionModePreference.Custom -> "custom"
+            else -> "none"
         }
+        config.set("type" to type)
+        config.set("mode" to mode)
+        config.save()
     }
-
-    sealed class Mode : JsonModel {
-        class Easy : Mode() {
-
-            companion object {
-                val DEFAULT = Easy().apply {
-                    // TODO: paths
-                }
-            }
-
-            override fun equals(other: Any?) = EqualsBuilder.reflectionEquals(this, other)
-
-            override fun hashCode() = HashCodeBuilder.reflectionHashCode(this)
-        }
-        class Custom : Mode() {
-            var conerCoreServiceUri by singleAssign<URI>()
-            var conerCoreAdminUri by singleAssign<URI>()
-
-            override fun toJSON(json: JsonBuilder) {
-                with(json) {
-                    add("conerCoreServiceUri", conerCoreServiceUri.toString())
-                    add("conerCoreAdminUri", conerCoreAdminUri.toString())
-                }
-            }
-
-            override fun updateModel(json: JsonObject) {
-                with(json) {
-                    conerCoreServiceUri = URI(string("conerCoreServiceUri"))
-                    conerCoreAdminUri = URI(string("conerCoreAdminUri"))
-                }
-            }
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) return true
-                if (javaClass != other?.javaClass) return false
-                return EqualsBuilder()
-                        .append(this.conerCoreServiceUri, (other as Custom).conerCoreServiceUri)
-                        .append(this.conerCoreAdminUri, other.conerCoreAdminUri)
-                        .build()
-            }
-
-            override fun hashCode(): Int {
-                return javaClass.hashCode()
-            }
-
-            companion object {
-                val DEFAULT = Custom().apply {
-                    conerCoreServiceUri = URI("http://localhost:8080")
-                    conerCoreAdminUri = URI("http://localhost:8081")
-                }
-            }
-
-
-        }
-    }
-
-    companion object {
-        val DEFAULT = ConnectionPreferencesModel().apply {
-            value = Mode.Easy.DEFAULT
-        }
-    }
-
 
 }
 
-class ConnectionPreferencesController : Controller() {
+sealed class ConnectionModePreference : JsonModel {
+    class None : ConnectionModePreference()
 
-    val connectionPreferencesProperty = SimpleObjectProperty<ConnectionPreferencesModel>()
-    var connectionPreferences by connectionPreferencesProperty
+    class Easy : Custom() {
 
-    init {
-        connectionPreferences = app.config.jsonModel("connectionPreferences")
-        connectionPreferencesProperty.onChange {
-            app.config.set("connectionPreferences" to it)
-            app.config.save()
+        companion object {
+            val DEFAULT = Easy().apply {
+                conerCoreServiceUri = Custom.DEFAULT.conerCoreServiceUri
+                conerCoreAdminUri = Custom.DEFAULT.conerCoreAdminUri
+                // TODO: paths
+            }
         }
+    }
+
+    open class Custom : ConnectionModePreference() {
+        var conerCoreServiceUri by singleAssign<URI>()
+        var conerCoreAdminUri by singleAssign<URI>()
+
+        override fun toJSON(json: JsonBuilder) {
+            with(json) {
+                add("conerCoreServiceUri", conerCoreServiceUri.toString())
+                add("conerCoreAdminUri", conerCoreAdminUri.toString())
+            }
+        }
+
+        override fun updateModel(json: JsonObject) {
+            with(json) {
+                conerCoreServiceUri = URI(string("conerCoreServiceUri"))
+                conerCoreAdminUri = URI(string("conerCoreAdminUri"))
+            }
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+            return EqualsBuilder()
+                    .append(this.conerCoreServiceUri, (other as Custom).conerCoreServiceUri)
+                    .append(this.conerCoreAdminUri, other.conerCoreAdminUri)
+                    .build()
+        }
+
+        override fun hashCode(): Int {
+            return HashCodeBuilder()
+                    .append(conerCoreServiceUri)
+                    .append(conerCoreAdminUri)
+                    .build()
+        }
+
+        companion object {
+            val DEFAULT = Custom().apply {
+                conerCoreServiceUri = URI("http://localhost:8080")
+                conerCoreAdminUri = URI("http://localhost:8081")
+            }
+        }
+
+
     }
 }

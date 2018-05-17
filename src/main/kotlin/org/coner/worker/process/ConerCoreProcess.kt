@@ -1,7 +1,6 @@
 package org.coner.worker.process
 
 import com.google.common.base.Preconditions
-import io.reactivex.Completable
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import javax.inject.Inject
@@ -23,7 +22,7 @@ class ConerCoreProcess @Inject constructor(private val processBuilder: ProcessBu
         )
     }
 
-    override fun start() = Completable.fromAction {
+    override fun start() {
         Preconditions.checkState(process == null, "Process already started")
         process = processBuilder.start()
         var verifiedStarted = false
@@ -36,7 +35,7 @@ class ConerCoreProcess @Inject constructor(private val processBuilder: ProcessBu
         if (!verifiedStarted) throw ManagedProcess.FailedToStartException(this)
     }
 
-    override fun stop() = Completable.fromAction {
+    override fun stop() {
         process?.destroy()
         process = null
     }

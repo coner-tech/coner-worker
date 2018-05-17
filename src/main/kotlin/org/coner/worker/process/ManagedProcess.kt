@@ -1,12 +1,10 @@
 package org.coner.worker.process
 
-import io.reactivex.Completable
-
 abstract class ManagedProcess {
 
-    abstract fun start(): Completable
+    abstract fun start()
 
-    abstract fun stop(): Completable
+    abstract fun stop()
 
     abstract val started: Boolean
 

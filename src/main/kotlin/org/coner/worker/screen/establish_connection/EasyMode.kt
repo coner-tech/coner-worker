@@ -3,19 +3,22 @@ package org.coner.worker.screen.establish_connection
 import javafx.scene.control.Alert
 import javafx.scene.layout.Priority
 import javafx.stage.FileChooser
+import org.coner.worker.ConnectionModePreference
+import org.coner.worker.ConnectionPreferencesController
 import org.coner.worker.process.ConerCoreProcess
 import tornadofx.*
-import java.net.URI
 
 class EasyModeConnectionController : Controller() {
     val model by inject<EasyModeConnectionModel>()
     val coreProcess by di<ConerCoreProcess>()
+    val coreServiceConnectionDetailsController by inject<CustomConnectionController>()
 
-    fun testSettings() {
+    fun testSettings(spec: AttemptCustomConerCoreConnection) {
         if (coreProcess.started) coreProcess.stop()
         val settings = ConerCoreProcess.Settings(model.pathToJar.value, model.pathToConfig.value)
         coreProcess.configure(settings)
-        coreProcess.start().blockingAwait()
+        coreProcess.start()
+        coreServiceConnectionDetailsController.connect(spec)
     }
 }
 
@@ -28,6 +31,7 @@ class EasyModeConnectionView : View() {
     val model by inject<EasyModeConnectionModel>()
     val controller by inject<EasyModeConnectionController>()
     val coreServiceConnectionDetailsController by inject<CustomConnectionController>()
+    val connectionPrefsController by inject<ConnectionPreferencesController>()
     override val root = form {
         fieldset(messages["coner_core"]) {
             field(messages["path_to_jar"]) {
@@ -61,15 +65,19 @@ class EasyModeConnectionView : View() {
             }
             button(messages["connect"]) {
                 action {
+                    val mode = if (connectionPrefsController.mode is ConnectionModePreference.Easy) {
+                        connectionPrefsController.mode as ConnectionModePreference.Easy
+                    } else {
+                        ConnectionModePreference.Easy.DEFAULT
+                    }
                     val spec = AttemptCustomConerCoreConnection(
-                            applicationUri = URI("http://localhost:8080"),
-                            adminUri = URI("http://localhost:8081")
+                            applicationUri = mode.conerCoreServiceUri,
+                            adminUri = mode.conerCoreAdminUri
                     )
                     runAsyncWithProgress {
-                        controller.testSettings()
-                        coreServiceConnectionDetailsController.connect(spec)
+                        controller.testSettings(spec)
                     } success {
-                        coreServiceConnectionDetailsController.onConnectSuccess(spec)
+                        connectionPrefsController.mode = mode
                     } fail {
                         alert(Alert.AlertType.ERROR, "Failed to connect", it.stackTrace.joinToString("\n"))
                         coreServiceConnectionDetailsController.onConnectFail(spec)

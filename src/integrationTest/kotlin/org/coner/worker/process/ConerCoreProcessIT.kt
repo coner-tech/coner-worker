@@ -33,11 +33,11 @@ class ConerCoreProcessIT {
         assertFalse(conerCoreProcess.started)
 
         conerCoreProcess.configure(settings)
-        conerCoreProcess.start().blockingAwait()
+        conerCoreProcess.start()
 
         assertTrue(conerCoreProcess.started)
 
-        conerCoreProcess.stop().blockingAwait()
+        conerCoreProcess.stop()
 
         assertFalse(conerCoreProcess.started)
     }
