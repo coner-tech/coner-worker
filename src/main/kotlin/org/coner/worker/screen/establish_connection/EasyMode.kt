@@ -7,6 +7,7 @@ import org.coner.worker.ConnectionModePreference
 import org.coner.worker.ConnectionPreferencesController
 import org.coner.worker.process.ConerCoreProcess
 import tornadofx.*
+import java.io.File
 
 class EasyModeConnectionController : Controller() {
     val model by inject<EasyModeConnectionModel>()
@@ -37,6 +38,11 @@ class EasyModeConnectionView : View() {
             field(messages["path_to_jar"]) {
                 hbox(spacing = 10) {
                     textfield(model.pathToJar) {
+                        required()
+                        validator {
+                            if (it == null) return@validator null
+                            if (!File(it).exists()) error(messages["file_not_exist"]) else null
+                        }
                         hgrow = Priority.ALWAYS
                     }
                     button(messages["select"]) {
@@ -53,6 +59,7 @@ class EasyModeConnectionView : View() {
             field(messages["path_to_config"]) {
                 hbox(spacing = 10) {
                     textfield(model.pathToConfig) {
+                        required()
                         hgrow = Priority.ALWAYS
                     }
                     button(messages["select"]) {
@@ -64,6 +71,7 @@ class EasyModeConnectionView : View() {
                 }
             }
             button(messages["connect"]) {
+                enableWhen(model.valid)
                 action {
                     val mode = if (connectionPrefsController.mode is ConnectionModePreference.Easy) {
                         connectionPrefsController.mode as ConnectionModePreference.Easy
