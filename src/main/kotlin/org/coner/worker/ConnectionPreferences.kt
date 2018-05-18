@@ -1,11 +1,9 @@
 package org.coner.worker
 
 import javafx.beans.property.SimpleObjectProperty
-import org.apache.commons.lang3.builder.EqualsBuilder
-import org.apache.commons.lang3.builder.HashCodeBuilder
+import org.coner.worker.util.ConfigPropertiesBoundary
 import tornadofx.*
 import java.net.URI
-import javax.json.JsonObject
 
 class ConnectionPreferencesController : Controller() {
 
@@ -18,81 +16,99 @@ class ConnectionPreferencesController : Controller() {
     }
 
     private fun load() {
-        mode = when (config.string("type")) {
-            "easy" -> config.jsonModel<ConnectionModePreference.Easy>("mode")
-            "custom" -> config.jsonModel<ConnectionModePreference.Custom>("mode")
-            else -> ConnectionModePreference.None()
-        }
+        mode = ConnectionModePreference.read(config)
     }
 
     private fun save(mode: ConnectionModePreference?) {
-        val type = when (mode) {
-            is ConnectionModePreference.Easy -> "easy"
-            is ConnectionModePreference.Custom -> "custom"
-            else -> "none"
-        }
-        config.set("type" to type)
-        config.set("mode" to mode)
+        ConnectionModePreference.write(mode, config)
         config.save()
     }
 
 }
 
-sealed class ConnectionModePreference : JsonModel {
-    class None : ConnectionModePreference()
+sealed class ConnectionModePreference {
 
-    class Easy : Custom() {
+    companion object : ConfigPropertiesBoundary<ConnectionModePreference?> {
+        override fun read(configProperties: ConfigProperties): ConnectionModePreference? {
+            return when (configProperties.string("type")) {
+                "easy" -> Easy.read(configProperties)
+                "custom" -> Custom.read(configProperties)
+                else -> None()
+            }
+        }
 
-        companion object {
-            val DEFAULT = Easy().apply {
-                conerCoreServiceUri = Custom.DEFAULT.conerCoreServiceUri
-                conerCoreAdminUri = Custom.DEFAULT.conerCoreAdminUri
-                // TODO: paths
+        override fun write(value: ConnectionModePreference?, configProperties: ConfigProperties) {
+            when (value) {
+                is Easy -> {
+                    Easy.write(value, configProperties)
+                    configProperties.set("type" to "easy")
+                }
+                is Custom -> {
+                    Custom.write(value, configProperties)
+                    configProperties.set("type" to "custom")
+                }
+                is None -> {
+                    configProperties.set("type" to "none")
+                }
             }
         }
     }
 
-    open class Custom : ConnectionModePreference() {
-        var conerCoreServiceUri by singleAssign<URI>()
-        var conerCoreAdminUri by singleAssign<URI>()
+    class None : ConnectionModePreference()
 
-        override fun toJSON(json: JsonBuilder) {
-            with(json) {
-                add("conerCoreServiceUri", conerCoreServiceUri.toString())
-                add("conerCoreAdminUri", conerCoreAdminUri.toString())
+    data class Easy(
+            val conerCoreServiceUri: URI,
+            val conerCoreAdminUri: URI
+            // TODO: paths
+    ) : ConnectionModePreference() {
+
+        companion object : ConfigPropertiesBoundary<Easy> {
+            override fun read(configProperties: ConfigProperties): Easy {
+                with(configProperties) {
+                    return Easy(
+                            conerCoreServiceUri = URI(string("conerCoreServiceUri")),
+                            conerCoreAdminUri = URI(string("conerCoreAdminUri"))
+                    )
+                }
             }
-        }
 
-        override fun updateModel(json: JsonObject) {
-            with(json) {
-                conerCoreServiceUri = URI(string("conerCoreServiceUri"))
-                conerCoreAdminUri = URI(string("conerCoreAdminUri"))
+            override fun write(value: Easy, configProperties: ConfigProperties) {
+                with(configProperties) {
+                    set("conerCoreServiceUri" to value.conerCoreServiceUri)
+                    set("conerCoreAdminUri" to value.conerCoreAdminUri)
+                }
             }
-        }
 
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-            return EqualsBuilder()
-                    .append(this.conerCoreServiceUri, (other as Custom).conerCoreServiceUri)
-                    .append(this.conerCoreAdminUri, other.conerCoreAdminUri)
-                    .build()
+            val DEFAULT = Easy(
+                    conerCoreServiceUri = Custom.DEFAULT.conerCoreServiceUri,
+                    conerCoreAdminUri = Custom.DEFAULT.conerCoreAdminUri
+            )
         }
+    }
 
-        override fun hashCode(): Int {
-            return HashCodeBuilder()
-                    .append(conerCoreServiceUri)
-                    .append(conerCoreAdminUri)
-                    .build()
-        }
+    data class Custom(val conerCoreServiceUri: URI, val conerCoreAdminUri: URI) : ConnectionModePreference() {
 
-        companion object {
-            val DEFAULT = Custom().apply {
-                conerCoreServiceUri = URI("http://localhost:8080")
-                conerCoreAdminUri = URI("http://localhost:8081")
+        companion object : ConfigPropertiesBoundary<Custom> {
+            override fun read(configProperties: ConfigProperties): Custom {
+                with(configProperties) {
+                    return Custom(
+                            conerCoreServiceUri = URI(string("conerCoreServiceUri")),
+                            conerCoreAdminUri = URI(string("conerCoreAdminUri"))
+                    )
+                }
             }
+
+            override fun write(value: Custom, configProperties: ConfigProperties) {
+                with(configProperties) {
+                    set("conerCoreServiceUri" to value.conerCoreServiceUri)
+                    set("conerCoreAdminUri" to value.conerCoreAdminUri)
+                }
+            }
+
+            val DEFAULT = Custom(
+                    conerCoreServiceUri = URI("http://localhost:8080"),
+                    conerCoreAdminUri = URI("http://localhost:8081")
+            )
         }
-
-
     }
 }

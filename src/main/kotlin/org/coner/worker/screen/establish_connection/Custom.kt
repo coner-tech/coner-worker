@@ -40,10 +40,10 @@ class CustomConnectionController : Controller() {
     }
 
     fun onConnectSuccess(spec: AttemptCustomConerCoreConnection) {
-        connectionPreferencesController.mode = ConnectionModePreference.Custom().apply {
-            conerCoreServiceUri = spec.applicationUri
-            conerCoreAdminUri = spec.adminUri
-        }
+        connectionPreferencesController.mode = ConnectionModePreference.Custom(
+                conerCoreServiceUri = spec.applicationUri,
+                conerCoreAdminUri = spec.adminUri
+        )
     }
 
     fun onConnectFail(spec: AttemptCustomConerCoreConnection) {
