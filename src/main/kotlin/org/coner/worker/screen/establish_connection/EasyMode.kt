@@ -3,11 +3,11 @@ package org.coner.worker.screen.establish_connection
 import javafx.scene.control.Alert
 import javafx.scene.layout.Priority
 import javafx.stage.FileChooser
-import org.coner.worker.ConnectionModePreference
-import org.coner.worker.ConnectionPreferencesController
+import org.coner.worker.ConnectionPreferencesModel
 import org.coner.worker.process.ConerCoreProcess
 import tornadofx.*
 import java.io.File
+import java.net.URI
 
 class EasyModeConnectionController : Controller() {
     val model by inject<EasyModeConnectionModel>()
@@ -32,7 +32,7 @@ class EasyModeConnectionView : View() {
     val model by inject<EasyModeConnectionModel>()
     val controller by inject<EasyModeConnectionController>()
     val coreServiceConnectionDetailsController by inject<CustomConnectionController>()
-    val connectionPrefsController by inject<ConnectionPreferencesController>()
+    val connectionPreferencesModel by inject<ConnectionPreferencesModel>()
     override val root = form {
         fieldset(messages["coner_core"]) {
             field(messages["path_to_jar"]) {
@@ -73,19 +73,16 @@ class EasyModeConnectionView : View() {
             button(messages["connect"]) {
                 enableWhen(model.valid)
                 action {
-                    val mode = if (connectionPrefsController.mode is ConnectionModePreference.Easy) {
-                        connectionPrefsController.mode as ConnectionModePreference.Easy
-                    } else {
-                        ConnectionModePreference.Easy.DEFAULT
-                    }
                     val spec = AttemptCustomConerCoreConnection(
-                            applicationUri = mode.conerCoreServiceUri,
-                            adminUri = mode.conerCoreAdminUri
+                            applicationUri = URI(connectionPreferencesModel.conerCoreServiceUrl),
+                            adminUri = URI(connectionPreferencesModel.conerCoreAdminUrl)
                     )
                     runAsyncWithProgress {
                         controller.testSettings(spec)
                     } success {
-                        connectionPrefsController.mode = mode
+                        connectionPreferencesModel.mode = ConnectionPreferencesModel.Mode.Easy
+                        connectionPreferencesModel.save()
+                        // TODO: paths
                     } fail {
                         alert(Alert.AlertType.ERROR, "Failed to connect", it.stackTrace.joinToString("\n"))
                         coreServiceConnectionDetailsController.onConnectFail(spec)

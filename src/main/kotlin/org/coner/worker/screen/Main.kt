@@ -2,8 +2,7 @@ package org.coner.worker.screen
 
 import javafx.scene.Node
 import org.coner.worker.ConerPalette
-import org.coner.worker.ConnectionModePreference
-import org.coner.worker.ConnectionPreferencesController
+import org.coner.worker.ConnectionPreferencesModel
 import org.coner.worker.screen.establish_connection.EstablishConnectionView
 import tornadofx.*
 
@@ -36,10 +35,10 @@ class MainCenterView : View() {
 
 class MainController : Controller() {
 
-    val connectionPreferencesController by inject<ConnectionPreferencesController>()
+    val connectionPreferencesModel by inject<ConnectionPreferencesModel>()
 
     fun afterInit() {
-        if (connectionPreferencesController.mode is ConnectionModePreference.None) {
+        if (!connectionPreferencesModel.saved) {
             find(MainCenterView::class).replaceChildren { replaceWith(EstablishConnectionView::class) }
         } else {
             TODO("handle launch with config defined")
