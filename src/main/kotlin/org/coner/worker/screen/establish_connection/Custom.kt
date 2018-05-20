@@ -9,6 +9,7 @@ import javafx.util.converter.IntegerStringConverter
 import org.coner.core.client.ApiClient
 import org.coner.core.client.ApiException
 import org.coner.core.client.api.EventsApi
+import org.coner.worker.ConnectionPreferences
 import org.coner.worker.ConnectionPreferencesModel
 import tornadofx.*
 import java.net.URI
@@ -39,11 +40,10 @@ class CustomConnectionController : Controller() {
     }
 
     fun onConnectSuccess(spec: AttemptCustomConerCoreConnection) {
-        with(connectionPreferencesModel) {
-            mode = ConnectionPreferencesModel.Mode.Custom
+        connectionPreferencesModel.item = ConnectionPreferences().apply {
+            mode = ConnectionPreferences.Mode.Custom
             conerCoreServiceUrl = spec.applicationUri.toString()
             conerCoreAdminUrl = spec.adminUri.toString()
-            save()
         }
     }
 
