@@ -10,7 +10,7 @@ class ConnectionPreferencesController : Controller() {
     val model by inject<ConnectionPreferencesModel>()
 
     init {
-        model.item = loadFromConfig()
+        model.item = if (config.hasConnectionPreferences()) loadFromConfig() else ConnectionPreferences()
         model.itemProperty.onChange {
             save()
         }
@@ -19,14 +19,10 @@ class ConnectionPreferencesController : Controller() {
     private fun loadFromConfig(): ConnectionPreferences {
         with(config) {
             return ConnectionPreferences().apply {
-                saved = boolean("saved") ?: false
-                mode = when (string("mode")) {
-                    is String -> ConnectionPreferences.Mode.valueOf(string("mode"))
-                    else -> null
-                }
-
-                conerCoreServiceUrl = string("conerCoreServiceUrl") ?: "http://localhost:8080"
-                conerCoreAdminUrl = string("conerCoreAdminUrl") ?: "http://localhost:8081"
+                boolean(savedProperty.name)?.let { saved = it }
+                string(modeProperty.name)?.let { mode = ConnectionPreferences.Mode.valueOf(it) }
+                string(conerCoreServiceUrlProperty.name)?.let { conerCoreServiceUrl = it }
+                string(conerCoreAdminUrlProperty.name)?.let { conerCoreAdminUrl = it }
             }
         }
     }
@@ -36,15 +32,17 @@ class ConnectionPreferencesController : Controller() {
         val item = model.item
         with(config) {
             clear()
-            set("mode" to item.mode.toString())
-            set("conerCoreServiceUrl" to item.conerCoreServiceUrl)
-            set("conerCoreAdminUrl" to item.conerCoreAdminUrl)
-            set("saved" to true)
+            set(item.modeProperty.name to item.mode.toString())
+            set(item.conerCoreServiceUrlProperty.name to item.conerCoreServiceUrl)
+            set(item.conerCoreAdminUrlProperty.name to item.conerCoreAdminUrl)
+            set(item.savedProperty.name to true)
             save()
         }
         item.saved = true
     }
 }
+
+private fun ConfigProperties.hasConnectionPreferences() = ConnectionPreferences().properties.all { containsKey(it.name) }
 
 class ConnectionPreferencesModel : ItemViewModel<ConnectionPreferences>() {
     val saved = bind(ConnectionPreferences::savedProperty)
@@ -54,17 +52,19 @@ class ConnectionPreferencesModel : ItemViewModel<ConnectionPreferences>() {
 }
 
 class ConnectionPreferences {
-    val savedProperty = SimpleBooleanProperty(this, "saved")
+    val savedProperty = SimpleBooleanProperty(this, "saved", false)
     var saved by savedProperty
-    val modeProperty = SimpleObjectProperty<Mode?>(this, "mode")
+    val modeProperty = SimpleObjectProperty<Mode?>(this, "mode", Mode.Easy)
     var mode by modeProperty
-    val conerCoreServiceUrlProperty = SimpleStringProperty(this, "conerCoreServiceUrl")
+    val conerCoreServiceUrlProperty = SimpleStringProperty(this, "conerCoreServiceUrl", "http://localhost:8080")
     var conerCoreServiceUrl by conerCoreServiceUrlProperty
-    val conerCoreAdminUrlProperty = SimpleStringProperty(this, "conerCoreAdminUrl")
+    val conerCoreAdminUrlProperty = SimpleStringProperty(this, "conerCoreAdminUrl", "http://localhost:8081")
     var conerCoreAdminUrl by conerCoreAdminUrlProperty
 
     enum class Mode {
         Easy,
         Custom
     }
+
+    internal val properties = arrayOf(savedProperty, modeProperty, conerCoreServiceUrlProperty, conerCoreAdminUrlProperty)
 }
