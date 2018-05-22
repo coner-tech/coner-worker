@@ -16,7 +16,7 @@ import java.net.URI
 
 class CustomConnectionController : Controller() {
 
-    val connectionPreferencesModel by inject<ConnectionPreferencesModel>()
+    val connectionPreferencesModel: ConnectionPreferencesModel by inject()
 
     fun connect(attempt: AttemptCustomConerCoreConnection) {
         // request health
@@ -84,6 +84,7 @@ class CustomConnectionView : View() {
                         textFormatter = TextFormatter(IntegerStringConverter(), model.item.applicationPort)
                         stripNonInteger()
                         filterInput { it.controlNewText.isInt() }
+                        // TODO: inquire in #tornadofx why controlNewText contains a comma
                     }
                 }
                 field(messages["field_admin_port"]) {
@@ -122,5 +123,6 @@ class CustomConnectionView : View() {
 
     init {
         title = messages["title"]
+
     }
 }
