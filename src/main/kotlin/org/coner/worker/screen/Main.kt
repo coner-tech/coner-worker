@@ -38,7 +38,7 @@ class MainController : Controller() {
     val connectionPreferencesController by inject<ConnectionPreferencesController>()
 
     fun afterInit() {
-        if (!connectionPreferencesController.model.saved.value) {
+        if (!connectionPreferencesController.model.item.saved) {
             find(MainCenterView::class).replaceChildren { replaceWith(EstablishConnectionView::class) }
         } else {
             TODO("handle launch with config defined")
