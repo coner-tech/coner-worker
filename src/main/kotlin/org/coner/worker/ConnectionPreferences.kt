@@ -10,39 +10,39 @@ class ConnectionPreferencesController : Controller() {
     val model by inject<ConnectionPreferencesModel>()
 
     init {
-        model.item = if (config.hasConnectionPreferences()) loadFromConfig() else ConnectionPreferences()
+        model.item = if (config.hasConnectionPreferences()) config.loadConnectionPreferences() else ConnectionPreferences()
         model.itemProperty.onChange {
             save()
-        }
-    }
-
-    private fun loadFromConfig(): ConnectionPreferences {
-        with(config) {
-            return ConnectionPreferences().apply {
-                boolean(savedProperty.name)?.let { saved = it }
-                string(modeProperty.name)?.let { mode = ConnectionPreferences.Mode.valueOf(it) }
-                string(conerCoreServiceUrlProperty.name)?.let { conerCoreServiceUrl = it }
-                string(conerCoreAdminUrlProperty.name)?.let { conerCoreAdminUrl = it }
-            }
         }
     }
 
     private fun save() {
         model.commit()
         val item = model.item
-        with(config) {
-            clear()
-            set(item.modeProperty.name to item.mode.toString())
-            set(item.conerCoreServiceUrlProperty.name to item.conerCoreServiceUrl)
-            set(item.conerCoreAdminUrlProperty.name to item.conerCoreAdminUrl)
-            set(item.savedProperty.name to true)
-            save()
-        }
+        config.saveConnectionPreferences(item)
         item.saved = true
     }
 }
 
 private fun ConfigProperties.hasConnectionPreferences() = ConnectionPreferences().properties.all { containsKey(it.name) }
+
+private fun ConfigProperties.loadConnectionPreferences(): ConnectionPreferences {
+    return ConnectionPreferences().apply {
+        boolean(savedProperty.name)?.let { saved = it }
+        string(modeProperty.name)?.let { mode = ConnectionPreferences.Mode.valueOf(it) }
+        string(conerCoreServiceUrlProperty.name)?.let { conerCoreServiceUrl = it }
+        string(conerCoreAdminUrlProperty.name)?.let { conerCoreAdminUrl = it }
+    }
+}
+
+private fun ConfigProperties.saveConnectionPreferences(item: ConnectionPreferences) {
+    clear()
+    set(item.modeProperty.name to item.mode.toString())
+    set(item.conerCoreServiceUrlProperty.name to item.conerCoreServiceUrl)
+    set(item.conerCoreAdminUrlProperty.name to item.conerCoreAdminUrl)
+    set(item.savedProperty.name to true)
+    save()
+}
 
 class ConnectionPreferencesModel : ItemViewModel<ConnectionPreferences>() {
     val saved = bind(ConnectionPreferences::savedProperty)
