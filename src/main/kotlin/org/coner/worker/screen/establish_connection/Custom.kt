@@ -4,8 +4,9 @@ import javafx.geometry.Orientation
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonBar
 import javafx.scene.control.TextFormatter
+import javafx.scene.control.TextInputControl
 import javafx.scene.layout.Priority
-import javafx.util.converter.IntegerStringConverter
+import javafx.util.converter.NumberStringConverter
 import org.coner.core.client.ApiClient
 import org.coner.core.client.ApiException
 import org.coner.core.client.api.EventsApi
@@ -58,6 +59,7 @@ class AttemptCustomConerCoreConnection(val applicationUri: URI, val adminUri: UR
 class CustomConnectionView : View() {
     val model: ServiceConnectionModel by inject()
     val controller: CustomConnectionController by inject()
+    private val portNumberConverter = NumberStringConverter("#####")
 
     override val root = form {
         hgrow = Priority.ALWAYS
@@ -81,40 +83,39 @@ class CustomConnectionView : View() {
                     textfield(model.applicationPort) {
                         id = "application_port"
                         required()
-                        textFormatter = TextFormatter(IntegerStringConverter(), model.item.applicationPort)
+                        textFormatter = TextFormatter(portNumberConverter, model.item.applicationPort)
                         stripNonInteger()
-                        filterInput { it.controlNewText.isInt() }
-                        // TODO: inquire in #tornadofx why controlNewText contains a comma
+                        requireValidPortNumber()
                     }
                 }
                 field(messages["field_admin_port"]) {
                     textfield(model.adminPort) {
                         id = "admin_port"
                         required()
-                        textFormatter = TextFormatter(IntegerStringConverter(), model.item.adminPort)
+                        textFormatter = TextFormatter(portNumberConverter, model.item.adminPort)
                         stripNonInteger()
-                        filterInput { it.controlNewText.isInt() }
+                        requireValidPortNumber()
                     }
                 }
             }
-        }
-        buttonbar {
-            button(messages["button_connect"], ButtonBar.ButtonData.OK_DONE) {
-                id = "connect"
-                enableWhen { model.valid }
-                action {
-                    val spec = AttemptCustomConerCoreConnection(
-                            applicationUri = model.applicationBaseUrl.get()!!,
-                            adminUri = model.adminBaseUrl.get()!!
-                    )
-                    runAsyncWithProgress {
-                        controller.connect(spec)
-                    } success {
-                        controller.onConnectSuccess(spec)
-                        alert(Alert.AlertType.INFORMATION, "Connected")
-                    } fail {
-                        controller.onConnectFail(spec)
-                        alert(Alert.AlertType.ERROR, "Failed to connect")
+            buttonbar {
+                button(messages["button_connect"], ButtonBar.ButtonData.OK_DONE) {
+                    id = "connect"
+                    enableWhen { model.valid }
+                    action {
+                        val spec = AttemptCustomConerCoreConnection(
+                                applicationUri = model.applicationBaseUrl.get()!!,
+                                adminUri = model.adminBaseUrl.get()!!
+                        )
+                        runAsyncWithProgress {
+                            controller.connect(spec)
+                        } success {
+                            controller.onConnectSuccess(spec)
+                            alert(Alert.AlertType.INFORMATION, "Connected")
+                        } fail {
+                            controller.onConnectFail(spec)
+                            alert(Alert.AlertType.ERROR, "Failed to connect")
+                        }
                     }
                 }
             }
@@ -124,5 +125,15 @@ class CustomConnectionView : View() {
     init {
         title = messages["title"]
 
+    }
+}
+
+private fun TextInputControl.requireValidPortNumber(trigger: ValidationTrigger = ValidationTrigger.OnChange(), message: String? = viewModelBundle["required"]) {
+    val portNumberConverter = NumberStringConverter("#####")
+    return validator(trigger) {
+        if (it?.isBlank() == true) return@validator null
+        if (portNumberConverter.fromString(it)?.toInt() !in 1..65536) {
+            error("Invalid port number")
+        } else null
     }
 }
