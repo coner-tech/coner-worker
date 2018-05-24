@@ -15,7 +15,7 @@
         <rxjava2.version>2.1.9</rxjava2.version>
         <rxkotlin2.version>2.2.0</rxkotlin2.version>
         <junit.version>4.12</junit.version>
-        <testfx.version>4.0.11-alpha</testfx.version>
+        <testfx.version>4.0.13-alpha</testfx.version>
         <jsonassert.version>1.5.0</jsonassert.version>
         <coner-core.version>0.1.21</coner-core.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

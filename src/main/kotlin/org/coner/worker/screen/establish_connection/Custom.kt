@@ -59,6 +59,7 @@ class AttemptCustomConerCoreConnection(val applicationUri: URI, val adminUri: UR
 class CustomConnectionView : View() {
     val model: ServiceConnectionModel by inject()
     val controller: CustomConnectionController by inject()
+
     private val portNumberConverter = NumberStringConverter("#####")
 
     override val root = form {
@@ -69,6 +70,7 @@ class CustomConnectionView : View() {
                 spacing = 8.0
                 field(messages["field_protocol"]) {
                     choicebox(model.protocol, listOf("http", "https")) {
+                        validator { if (it == null) error("Choose a protocol") else null }
                         id = "protocol"
                     }
                 }

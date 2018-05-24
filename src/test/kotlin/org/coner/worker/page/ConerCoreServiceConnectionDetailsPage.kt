@@ -6,6 +6,7 @@ import javafx.scene.control.TextField
 import javafx.scene.input.KeyCode
 import org.coner.worker.screen.establish_connection.CustomConnectionView
 import org.testfx.api.FxRobot
+import java.net.URI
 
 class ConerCoreServiceConnectionDetailsPage(val robot: FxRobot, val view: CustomConnectionView) {
 
@@ -14,6 +15,16 @@ class ConerCoreServiceConnectionDetailsPage(val robot: FxRobot, val view: Custom
     val adminPort: TextField = robot.lookup("#admin_port").query()
     val host: TextField = robot.lookup("#host").query()
     val connect: Button = robot.lookup("#connect").query()
+
+    val realisticApplicationUri = URI("http://localhost:8080")
+    val realisticAdminUri = URI("http://localahost:8081")
+
+    fun setRealisticValues() {
+        // TODO: set protocol
+        setHost(realisticApplicationUri.host)
+        setApplicationPort(realisticApplicationUri.port.toString())
+        setAdminPort(realisticAdminUri.port.toString())
+    }
 
     fun clearHost() {
         robot.doubleClickOn(host)
