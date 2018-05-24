@@ -58,12 +58,18 @@ class CustomConnectionViewTest {
     fun itShouldEnableConnectWhenPageFilledRealisticValues() {
         page.fillRealisticValues()
 
-        FxAssert.verifyThat(page.connect, NodeMatchers.isEnabled())
+        FX.runAndWait {
+            FxAssert.verifyThat(page.connect, NodeMatchers.isEnabled())
+        }
     }
 
     @Test
     fun itShouldEnableConnectWhenModelFilledRealisticValues() {
         view.model.fillRealisticValues()
+
+        FX.runAndWait {
+            FxAssert.verifyThat(page.connect, NodeMatchers.isEnabled())
+        }
     }
 
     @Test
@@ -72,14 +78,18 @@ class CustomConnectionViewTest {
 
         page.clearHost()
 
-        FxAssert.verifyThat(page.connect, NodeMatchers.isDisabled())
+        FX.runAndWait {
+            FxAssert.verifyThat(page.connect, NodeMatchers.isDisabled())
+        }
     }
 
     @Test
     fun itShouldStripWhitespaceFromHost() {
         page.setHost("foo bar")
 
-        FxAssert.verifyThat(page.host, TextInputControlMatchers.hasText("foobar"))
+        FX.runAndWait {
+            FxAssert.verifyThat(page.host, TextInputControlMatchers.hasText("foobar"))
+        }
     }
 
     @Test
@@ -88,14 +98,18 @@ class CustomConnectionViewTest {
 
         page.clearApplicationPort()
 
-        FxAssert.verifyThat(page.connect, NodeMatchers.isDisabled())
+        FX.runAndWait {
+            FxAssert.verifyThat(page.connect, NodeMatchers.isDisabled())
+        }
     }
 
     @Test
     fun itShouldStripNonIntegerFromApplicationPort() {
         page.setApplicationPort("a.!@1234")
 
-        FxAssert.verifyThat(page.applicationPort, TextInputControlMatchers.hasText("1234"))
+        FX.runAndWait {
+            FxAssert.verifyThat(page.applicationPort, TextInputControlMatchers.hasText("1234"))
+        }
     }
 
     @Test
@@ -104,14 +118,18 @@ class CustomConnectionViewTest {
 
         page.clearAdminPort()
 
-        FxAssert.verifyThat(page.connect, NodeMatchers.isDisabled())
+        FX.runAndWait {
+            FxAssert.verifyThat(page.connect, NodeMatchers.isDisabled())
+        }
     }
 
     @Test
     fun itShouldStripNonIntegerFromAdminPort() {
         page.setAdminPort("a.!@#1234")
 
-        FxAssert.verifyThat(page.adminPort, TextInputControlMatchers.hasText("1234"))
+        FX.runAndWait {
+            FxAssert.verifyThat(page.adminPort, TextInputControlMatchers.hasText("1234"))
+        }
     }
 
     @Test
@@ -123,10 +141,12 @@ class CustomConnectionViewTest {
         page.connect()
 
         latch.await()
-        val specSlot = slot<AttemptCustomConerCoreConnection>()
-        verify { view.controller.connect(capture(specSlot)) }
-        assertEquals(page.realisticValues.applicationUri, specSlot.captured.applicationUri)
-        assertEquals(page.realisticValues.adminUri, specSlot.captured.adminUri)
+        FX.runAndWait {
+            val specSlot = slot<AttemptCustomConerCoreConnection>()
+            verify { view.controller.connect(capture(specSlot)) }
+            assertEquals(page.realisticValues.applicationUri, specSlot.captured.applicationUri)
+            assertEquals(page.realisticValues.adminUri, specSlot.captured.adminUri)
+        }
     }
 
     @Test
@@ -139,9 +159,11 @@ class CustomConnectionViewTest {
         page.connect()
 
         latch.await()
-        val specSlot = slot<AttemptCustomConerCoreConnection>()
-        verify { view.controller.connect(capture(specSlot)) }
-        verify { view.controller.onConnectSuccess(match { it == specSlot.captured }) }
+        FX.runAndWait {
+            val specSlot = slot<AttemptCustomConerCoreConnection>()
+            verify { view.controller.connect(capture(specSlot)) }
+            verify { view.controller.onConnectSuccess(match { it == specSlot.captured }) }
+        }
     }
 
     @Test
@@ -154,9 +176,11 @@ class CustomConnectionViewTest {
         page.connect()
 
         latch.await()
-        val specSlot = slot<AttemptCustomConerCoreConnection>()
-        verify { view.controller.connect(capture(specSlot)) }
-        verify { view.controller.onConnectFail(match { it == specSlot.captured }) }
+        FX.runAndWait {
+            val specSlot = slot<AttemptCustomConerCoreConnection>()
+            verify { view.controller.connect(capture(specSlot)) }
+            verify { view.controller.onConnectFail(match { it == specSlot.captured }) }
+        }
     }
 
     private fun ServiceConnectionModel.fillRealisticValues() {
