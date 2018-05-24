@@ -19,7 +19,6 @@ import tornadofx.*
 import java.util.concurrent.CountDownLatch
 import kotlin.test.assertEquals
 
-
 class CustomConnectionViewTest {
 
     lateinit var view: CustomConnectionView
@@ -48,7 +47,7 @@ class CustomConnectionViewTest {
 
     @Test
     fun itShouldStartWithDefaultValues() {
-        // TODO: verify protocol
+        FxAssert.verifyThat(page.protocol) { it.value == null }
         FxAssert.verifyThat(page.host, TextInputControlMatchers.hasText(null as String?))
         FxAssert.verifyThat(page.applicationPort, TextInputControlMatchers.hasText("0"))
         FxAssert.verifyThat(page.adminPort, TextInputControlMatchers.hasText("0"))
@@ -56,15 +55,20 @@ class CustomConnectionViewTest {
     }
 
     @Test
-    fun itShouldEnableConnectWhenFilledRealisticValues() {
-        page.setRealisticValues()
+    fun itShouldEnableConnectWhenPageFilledRealisticValues() {
+        page.fillRealisticValues()
 
         FxAssert.verifyThat(page.connect, NodeMatchers.isEnabled())
     }
 
     @Test
+    fun itShouldEnableConnectWhenModelFilledRealisticValues() {
+        view.model.fillRealisticValues()
+    }
+
+    @Test
     fun itShouldDisableConnectWhenHostEmpty() {
-        page.setRealisticValues()
+        view.model.fillRealisticValues()
 
         page.clearHost()
 
@@ -80,7 +84,7 @@ class CustomConnectionViewTest {
 
     @Test
     fun itShouldDisableConnectWhenApplicationPortEmpty() {
-        page.setRealisticValues()
+        view.model.fillRealisticValues()
 
         page.clearApplicationPort()
 
@@ -96,7 +100,7 @@ class CustomConnectionViewTest {
 
     @Test
     fun itShouldDisableConnectWhenAdminPortEmpty() {
-        page.setRealisticValues()
+        view.model.fillRealisticValues()
 
         page.clearAdminPort()
 
@@ -114,15 +118,15 @@ class CustomConnectionViewTest {
     fun itShouldAttemptToConnectWhenClickConnect() {
         val latch = CountDownLatch(1)
         every { view.controller.connect(any()) }.answers { latch.countDown() }
-        page.setRealisticValues()
+        view.model.fillRealisticValues()
 
         page.connect()
 
         latch.await()
         val specSlot = slot<AttemptCustomConerCoreConnection>()
         verify { view.controller.connect(capture(specSlot)) }
-        assertEquals(page.realisticApplicationUri, specSlot.captured.applicationUri)
-        assertEquals(page.realisticAdminUri, specSlot.captured.adminUri)
+        assertEquals(page.realisticValues.applicationUri, specSlot.captured.applicationUri)
+        assertEquals(page.realisticValues.adminUri, specSlot.captured.adminUri)
     }
 
     @Test
@@ -130,12 +134,12 @@ class CustomConnectionViewTest {
         val latch = CountDownLatch(2)
         every { view.controller.connect(any()) }.answers { latch.countDown() }
         every { view.controller.onConnectSuccess(any()) }.answers { latch.countDown() }
-        page.setRealisticValues()
+        view.model.fillRealisticValues()
 
         page.connect()
 
         latch.await()
-        var specSlot = slot<AttemptCustomConerCoreConnection>()
+        val specSlot = slot<AttemptCustomConerCoreConnection>()
         verify { view.controller.connect(capture(specSlot)) }
         verify { view.controller.onConnectSuccess(match { it == specSlot.captured }) }
     }
@@ -145,7 +149,7 @@ class CustomConnectionViewTest {
         val latch = CountDownLatch(1)
         every { view.controller.connect(any()) }.throws(ApiException())
         every { view.controller.onConnectFail(any()) }.answers { latch.countDown() }
-        page.setRealisticValues()
+        view.model.fillRealisticValues()
 
         page.connect()
 
@@ -155,4 +159,18 @@ class CustomConnectionViewTest {
         verify { view.controller.onConnectFail(match { it == specSlot.captured }) }
     }
 
+    private fun ServiceConnectionModel.fillRealisticValues() {
+        FX.runAndWait {
+            setToRealisticValues(page.realisticValues)
+        }
+    }
+}
+
+private fun ServiceConnectionModel.setToRealisticValues(realisticValues: ConerCoreServiceConnectionDetailsPage.RealisticValues) {
+    with(realisticValues) {
+        protocol.value = applicationUri.scheme
+        host.value = applicationUri.host
+        applicationPort.value = applicationUri.port
+        adminPort.value = adminUri.port
+    }
 }

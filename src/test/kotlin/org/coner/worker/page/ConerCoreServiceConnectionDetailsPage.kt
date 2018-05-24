@@ -6,6 +6,7 @@ import javafx.scene.control.TextField
 import javafx.scene.input.KeyCode
 import org.coner.worker.screen.establish_connection.CustomConnectionView
 import org.testfx.api.FxRobot
+import org.testfx.matcher.control.TextMatchers
 import java.net.URI
 
 class ConerCoreServiceConnectionDetailsPage(val robot: FxRobot, val view: CustomConnectionView) {
@@ -15,15 +16,23 @@ class ConerCoreServiceConnectionDetailsPage(val robot: FxRobot, val view: Custom
     val adminPort: TextField = robot.lookup("#admin_port").query()
     val host: TextField = robot.lookup("#host").query()
     val connect: Button = robot.lookup("#connect").query()
+    val realisticValues = RealisticValues(
+            applicationUri = URI("http://localhost:8080"),
+            adminUri = URI("http://localhost:8081")
+    )
 
-    val realisticApplicationUri = URI("http://localhost:8080")
-    val realisticAdminUri = URI("http://localahost:8081")
+    fun fillRealisticValues() {
+        with(realisticValues) {
+            setProtocol(applicationUri.scheme)
+            setHost(applicationUri.host)
+            setApplicationPort(applicationUri.port.toString())
+            setAdminPort(adminUri.port.toString())
+        }
+    }
 
-    fun setRealisticValues() {
-        // TODO: set protocol
-        setHost(realisticApplicationUri.host)
-        setApplicationPort(realisticApplicationUri.port.toString())
-        setAdminPort(realisticAdminUri.port.toString())
+    fun setProtocol(text: String) {
+        robot.clickOn(protocol)
+        robot.clickOn(TextMatchers.hasText(text))
     }
 
     fun clearHost() {
@@ -59,4 +68,6 @@ class ConerCoreServiceConnectionDetailsPage(val robot: FxRobot, val view: Custom
     fun connect() {
         robot.clickOn(connect)
     }
+
+    data class RealisticValues(val applicationUri: URI, val adminUri: URI)
 }
