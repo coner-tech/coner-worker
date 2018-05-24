@@ -79,6 +79,12 @@
         </dependency>
         <dependency>
             <groupId>org.testfx</groupId>
+            <artifactId>testfx-core</artifactId>
+            <version>${testfx.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testfx</groupId>
             <artifactId>testfx-junit</artifactId>
             <version>${testfx.version}</version>
             <scope>test</scope>
