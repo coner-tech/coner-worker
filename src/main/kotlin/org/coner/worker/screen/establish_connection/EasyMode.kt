@@ -45,9 +45,7 @@ class EasyModeConnectionModel : ItemViewModel<ConerCoreProcess.Settings>() {
 class EasyModeConnectionView : View() {
     val model by inject<EasyModeConnectionModel>()
     val controller by inject<EasyModeConnectionController>()
-    val coreServiceConnectionDetailsController by inject<CustomConnectionController>()
     val serviceConnectionModel by inject<ServiceConnectionModel>()
-    val connectionPreferencesModel by inject<ConnectionPreferencesModel>()
     override val root = form {
         id = "easy_mode"
         fieldset(messages["coner_core"]) {

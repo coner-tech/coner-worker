@@ -33,6 +33,8 @@ class EasyModeConnectionPage(val robot: FxRobot) {
         robot.write(text)
     }
 
+    fun getJar() = pathToJar.text
+
     fun clearConfig() {
         FX.runAndWait { pathToConfig.text = null }
     }
