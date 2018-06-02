@@ -63,9 +63,11 @@ class CustomConnectionView : View() {
     private val portNumberConverter = NumberStringConverter("#####")
 
     override val root = form {
+        id = "custom_connection"
         hgrow = Priority.ALWAYS
         vgrow = Priority.ALWAYS
         fieldset("Coner Core", labelPosition = Orientation.VERTICAL) {
+            id = "coner_core"
             hbox {
                 spacing = 8.0
                 field(messages["field_protocol"]) {

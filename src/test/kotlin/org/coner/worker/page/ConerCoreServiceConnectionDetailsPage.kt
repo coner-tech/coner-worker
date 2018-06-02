@@ -11,11 +11,13 @@ import java.net.URI
 
 class ConerCoreServiceConnectionDetailsPage(val robot: FxRobot, val view: CustomConnectionView) {
 
-    val protocol: ChoiceBox<String> = robot.lookup("#protocol").query()
-    val applicationPort: TextField = robot.lookup("#application_port").query()
-    val adminPort: TextField = robot.lookup("#admin_port").query()
-    val host: TextField = robot.lookup("#host").query()
-    val connect: Button = robot.lookup("#connect").query()
+    private val page = "#custom_connection #coner_core"
+
+    val protocol: ChoiceBox<String> = robot.lookup("$page #protocol").query()
+    val applicationPort: TextField = robot.lookup("$page #application_port").query()
+    val adminPort: TextField = robot.lookup("$page #admin_port").query()
+    val host: TextField = robot.lookup("$page #host").query()
+    val connect: Button = robot.lookup("$page #connect").query()
     val realisticValues = RealisticValues(
             applicationUri = URI("http://localhost:8080"),
             adminUri = URI("http://localhost:8081")

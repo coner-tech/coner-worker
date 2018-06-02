@@ -49,10 +49,12 @@ class EasyModeConnectionView : View() {
     val serviceConnectionModel by inject<ServiceConnectionModel>()
     val connectionPreferencesModel by inject<ConnectionPreferencesModel>()
     override val root = form {
+        id = "easy_mode"
         fieldset(messages["coner_core"]) {
             field(messages["path_to_jar"]) {
                 hbox(spacing = 10) {
                     textfield(model.pathToJar) {
+                        id = "path_to_jar"
                         required()
                         validator {
                             if (it == null) return@validator null
@@ -74,6 +76,7 @@ class EasyModeConnectionView : View() {
             field(messages["path_to_config"]) {
                 hbox(spacing = 10) {
                     textfield(model.pathToConfig) {
+                        id = "path_to_config"
                         required()
                         hgrow = Priority.ALWAYS
                     }
@@ -86,6 +89,7 @@ class EasyModeConnectionView : View() {
                 }
             }
             button(messages["connect"]) {
+                id = "connect"
                 enableWhen(model.valid.and(serviceConnectionModel.valid))
                 action {
                     val spec = AttemptCustomConerCoreConnection(
