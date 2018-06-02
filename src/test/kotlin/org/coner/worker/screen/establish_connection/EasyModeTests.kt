@@ -93,6 +93,15 @@ class EasyModeConnectionViewTest {
         FX.runAndWait { FxAssert.verifyThat(page.connect, NodeMatchers.isDisabled()) }
     }
 
+    @Test
+    fun itShouldDisableConnectWhenPathToConfigFileNotExist() {
+        view.model.fillValidValues()
+
+        page.setConfig("${page.getConfig()}.nope")
+
+        FX.runAndWait { FxAssert.verifyThat(page.connect, NodeMatchers.isDisabled()) }
+    }
+
     private fun EasyModeConnectionModel.fillValidValues() {
         FX.runAndWait {
             pathToJar.value = validPathToJar.absolutePath

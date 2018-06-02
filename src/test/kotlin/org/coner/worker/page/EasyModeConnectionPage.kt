@@ -45,5 +45,7 @@ class EasyModeConnectionPage(val robot: FxRobot) {
         robot.write(text)
     }
 
+    fun getConfig() = pathToConfig.text
+
     data class RealisticValues(val jarName: String, val configName: String)
 }

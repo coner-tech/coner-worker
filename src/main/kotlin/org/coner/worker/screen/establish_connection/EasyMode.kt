@@ -76,6 +76,10 @@ class EasyModeConnectionView : View() {
                     textfield(model.pathToConfig) {
                         id = "path_to_config"
                         required()
+                        validator {
+                            if (it == null) return@validator null
+                            if (!File(it).exists()) error(messages["file_not_exist"]) else null
+                        }
                         hgrow = Priority.ALWAYS
                     }
                     button(messages["select"]) {
