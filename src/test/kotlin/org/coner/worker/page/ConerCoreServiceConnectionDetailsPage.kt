@@ -8,17 +8,18 @@ import javafx.scene.input.KeyCode
 import org.testfx.api.FxRobot
 import org.testfx.matcher.control.TextMatchers
 import java.net.URI
+import javax.inject.Inject
 
-class ConerCoreServiceConnectionDetailsPage(val robot: FxRobot) {
+class ConerCoreServiceConnectionDetailsPage @Inject constructor(
+        val robot: FxRobot
+) {
 
-    private val page = "#custom_connection #coner_core"
-
-    val root: Node = robot.lookup(page).query()
-    val protocol: ChoiceBox<String> = robot.lookup("$page #protocol").query()
-    val applicationPort: TextField = robot.lookup("$page #application_port").query()
-    val adminPort: TextField = robot.lookup("$page #admin_port").query()
-    val host: TextField = robot.lookup("$page #host").query()
-    val connect: Button = robot.lookup("$page #connect").query()
+    val root: Node = robot.lookup("#custom_connection #coner_core").query()
+    val protocol: ChoiceBox<String> = robot.from(root).lookup("#protocol").query()
+    val applicationPort: TextField = robot.from(root).lookup("#application_port").query()
+    val adminPort: TextField = robot.from(root).lookup("#admin_port").query()
+    val host: TextField = robot.from(root).lookup("#host").query()
+    val connect: Button = robot.from(root).lookup("#connect").query()
     val realisticValues = RealisticValues(
             applicationUri = URI("http://localhost:8080"),
             adminUri = URI("http://localhost:8081")

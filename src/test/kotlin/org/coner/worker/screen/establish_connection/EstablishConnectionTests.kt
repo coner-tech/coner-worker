@@ -1,12 +1,14 @@
 package org.coner.worker.screen.establish_connection
 
+import com.authzee.kotlinguice4.getInstance
+import com.google.inject.Guice
 import io.mockk.mockk
 import io.mockk.verify
+import org.coner.worker.di.PageModule
 import org.coner.worker.page.EstablishConnectionPage
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.testfx.api.FxRobot
 import org.testfx.api.FxToolkit
 import org.testfx.assertions.api.Assertions
 import tornadofx.*
@@ -15,6 +17,8 @@ class EstablishConnectionViewTest {
 
     lateinit var view: EstablishConnectionView
     lateinit var page: EstablishConnectionPage
+
+    val injector = Guice.createInjector(PageModule())
 
     @Before
     fun before() {
@@ -26,7 +30,7 @@ class EstablishConnectionViewTest {
         }
         FxToolkit.setupApplication { app }
         view = stage.uiComponent()!!
-        page = EstablishConnectionPage(FxRobot())
+        page = injector.getInstance()
     }
 
     @After

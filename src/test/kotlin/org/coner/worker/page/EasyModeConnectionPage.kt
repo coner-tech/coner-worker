@@ -5,15 +5,16 @@ import javafx.scene.control.Button
 import javafx.scene.control.TextField
 import org.testfx.api.FxRobot
 import tornadofx.*
+import javax.inject.Inject
 
-class EasyModeConnectionPage(val robot: FxRobot) {
+class EasyModeConnectionPage @Inject constructor(
+        val robot: FxRobot
+) {
 
-    private val page = "#easy_mode"
-
-    val root: Node = robot.lookup(page).query()
-    val pathToJar: TextField = robot.lookup("$page #path_to_jar").query()
-    val pathToConfig: TextField = robot.lookup("$page #path_to_config").query()
-    val connect: Button = robot.lookup("$page #connect").query()
+    val root: Node = robot.lookup("#easy_mode").query()
+    val pathToJar: TextField = robot.from(root).lookup("#path_to_jar").query()
+    val pathToConfig: TextField = robot.from(root).lookup("#path_to_config").query()
+    val connect: Button = robot.from(root).lookup("#connect").query()
 
     val realisticValues = RealisticValues(
             jarName = "coner-core-service.jar",
