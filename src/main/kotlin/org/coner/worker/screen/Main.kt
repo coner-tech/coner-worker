@@ -25,7 +25,7 @@ class MainView : View() {
 
     init {
         title = messages["title"]
-        runLater { controller.afterInit() }
+        controller.onViewInit()
     }
 }
 
@@ -37,7 +37,7 @@ class MainController : Controller() {
 
     val connectionPreferencesController by inject<ConnectionPreferencesController>()
 
-    fun afterInit() {
+    fun onViewInit() {
         if (!connectionPreferencesController.model.item.saved) {
             find(MainCenterView::class).replaceChildren { replaceWith(EstablishConnectionView::class) }
         } else {
