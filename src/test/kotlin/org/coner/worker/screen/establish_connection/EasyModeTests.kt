@@ -21,7 +21,8 @@ class EasyModeConnectionViewTest {
     lateinit var validPathToJar: File
     lateinit var validPathToConfig: File
 
-    @Rule @JvmField
+    @Rule
+    @JvmField
     val folder = TemporaryFolder()
 
     @Before
@@ -29,7 +30,7 @@ class EasyModeConnectionViewTest {
         val stage = FxToolkit.registerPrimaryStage()
         stage.width = 600.0
         val app = App(EasyModeConnectionView::class)
-        with (app.scope) {
+        with(app.scope) {
             // TODO: injections?
         }
         FxToolkit.setupApplication { app }
@@ -79,7 +80,7 @@ class EasyModeConnectionViewTest {
     fun itShouldDisableConnectWhenPathToJarFileNotExist() {
         view.model.fillValidValues()
 
-        page.setJar("${page.getJar()}.nope")
+        FX.runAndWait { view.model.pathToJar.value = "${view.model.pathToJar.value}.nope" }
 
         FX.runAndWait { FxAssert.verifyThat(page.connect, NodeMatchers.isDisabled()) }
     }
@@ -97,7 +98,7 @@ class EasyModeConnectionViewTest {
     fun itShouldDisableConnectWhenPathToConfigFileNotExist() {
         view.model.fillValidValues()
 
-        page.setConfig("${page.getConfig()}.nope")
+        FX.runAndWait { view.model.pathToConfig.value = "${view.model.pathToConfig.value}.nope" }
 
         FX.runAndWait { FxAssert.verifyThat(page.connect, NodeMatchers.isDisabled()) }
     }
