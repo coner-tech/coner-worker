@@ -9,7 +9,9 @@ class EstablishConnectionPage(val robot: FxRobot) {
 
     val tabs: TabPane = robot.lookup("$page #tabs").query()
     val easyModeTab: Node = robot.lookup("$page #easy-mode-tab").query()
+    val easyModePage = EasyModeConnectionPage(robot)
     val customTab: Node = robot.lookup("$page #custom-connection-tab").query()
+    val customPage = ConerCoreServiceConnectionDetailsPage(robot)
 
     fun clickEasyModeTab() {
         robot.clickOn(easyModeTab)
@@ -17,8 +19,6 @@ class EstablishConnectionPage(val robot: FxRobot) {
 
     fun clickCustomConnectionTab() {
         robot.clickOn(customTab)
-
-
     }
 
     enum class Tabs(val index: Int) {

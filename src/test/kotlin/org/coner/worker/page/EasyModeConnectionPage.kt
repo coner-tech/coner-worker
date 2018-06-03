@@ -1,5 +1,6 @@
 package org.coner.worker.page
 
+import javafx.scene.Node
 import javafx.scene.control.Button
 import javafx.scene.control.TextField
 import org.testfx.api.FxRobot
@@ -9,6 +10,7 @@ class EasyModeConnectionPage(val robot: FxRobot) {
 
     private val page = "#easy_mode"
 
+    val root: Node = robot.lookup(page).query()
     val pathToJar: TextField = robot.lookup("$page #path_to_jar").query()
     val pathToConfig: TextField = robot.lookup("$page #path_to_config").query()
     val connect: Button = robot.lookup("$page #connect").query()

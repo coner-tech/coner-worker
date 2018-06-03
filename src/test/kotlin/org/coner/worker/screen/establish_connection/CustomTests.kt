@@ -36,7 +36,7 @@ class CustomConnectionViewTest {
         }
         FxToolkit.setupApplication { app }
         view = stage.uiComponent()!!
-        page = ConerCoreServiceConnectionDetailsPage(FxRobot(), view)
+        page = ConerCoreServiceConnectionDetailsPage(FxRobot())
     }
 
     @After

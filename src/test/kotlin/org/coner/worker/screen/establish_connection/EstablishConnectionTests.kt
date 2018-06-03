@@ -36,6 +36,12 @@ class EstablishConnectionViewTest {
     }
 
     @Test
+    fun onInitItShouldCallControllerNoOp() {
+        // depends on view init during before()
+        verify { view.controller.noOp() }
+    }
+
+    @Test
     fun itShouldHaveEasyModeTab() {
         page.clickEasyModeTab()
 
@@ -52,8 +58,10 @@ class EstablishConnectionViewTest {
     }
 
     @Test
-    fun onInitItShouldCallControllerNoOp() {
-        // depends on view init during before()
-        verify { view.controller.noOp() }
+    fun itShouldTraversePages() {
+        page.clickCustomConnectionTab()
+        page.robot.clickOn(page.customPage.adminPort)
+        page.clickEasyModeTab()
+        page.robot.clickOn(page.easyModePage.pathToConfig)
     }
 }

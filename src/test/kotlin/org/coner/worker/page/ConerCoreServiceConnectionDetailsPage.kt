@@ -1,18 +1,19 @@
 package org.coner.worker.page
 
+import javafx.scene.Node
 import javafx.scene.control.Button
 import javafx.scene.control.ChoiceBox
 import javafx.scene.control.TextField
 import javafx.scene.input.KeyCode
-import org.coner.worker.screen.establish_connection.CustomConnectionView
 import org.testfx.api.FxRobot
 import org.testfx.matcher.control.TextMatchers
 import java.net.URI
 
-class ConerCoreServiceConnectionDetailsPage(val robot: FxRobot, val view: CustomConnectionView) {
+class ConerCoreServiceConnectionDetailsPage(val robot: FxRobot) {
 
     private val page = "#custom_connection #coner_core"
 
+    val root: Node = robot.lookup(page).query()
     val protocol: ChoiceBox<String> = robot.lookup("$page #protocol").query()
     val applicationPort: TextField = robot.lookup("$page #application_port").query()
     val adminPort: TextField = robot.lookup("$page #admin_port").query()
