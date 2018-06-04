@@ -4,6 +4,7 @@ import com.google.inject.Guice
 import javafx.application.Application
 import javafx.scene.image.Image
 import javafx.stage.Stage
+import org.coner.worker.screen.MainController
 import org.coner.worker.screen.MainView
 import tornadofx.*
 import kotlin.reflect.KClass
@@ -11,7 +12,6 @@ import kotlin.reflect.KClass
 class WorkerApp : App(MainView::class, WorkerStylesheet::class) {
 
     val guice = Guice.createInjector(AppModule())
-    val lifecycleHandler: AppLifecycleController by inject()
 
     override fun start(stage: Stage) {
         super.start(stage)
@@ -22,7 +22,7 @@ class WorkerApp : App(MainView::class, WorkerStylesheet::class) {
         FX.primaryStage.minWidth = 512.0
         FX.primaryStage.minHeight = 512.0
 
-        stage.setOnCloseRequest(lifecycleHandler::onCloseRequest)
+        stage.setOnCloseRequest(find<MainController>()::onCloseRequest)
     }
 
     init {
