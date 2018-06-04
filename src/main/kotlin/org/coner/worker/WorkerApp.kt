@@ -11,6 +11,7 @@ import kotlin.reflect.KClass
 class WorkerApp : App(MainView::class, WorkerStylesheet::class) {
 
     val guice = Guice.createInjector(AppModule())
+    val lifecycleHandler: AppLifecycleController by inject()
 
     override fun start(stage: Stage) {
         super.start(stage)
@@ -20,6 +21,8 @@ class WorkerApp : App(MainView::class, WorkerStylesheet::class) {
         )
         FX.primaryStage.minWidth = 512.0
         FX.primaryStage.minHeight = 512.0
+
+        stage.setOnCloseRequest(lifecycleHandler::onCloseRequest)
     }
 
     init {
