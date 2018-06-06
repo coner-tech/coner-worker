@@ -7,6 +7,7 @@ class WorkerStylesheet : Stylesheet() {
 
     companion object {
         val h1 by cssclass("h1")
+        val default by csspseudoclass("default")
     }
 
     init {
@@ -14,6 +15,8 @@ class WorkerStylesheet : Stylesheet() {
             with(ConerPalette) {
                 accentColor = LOGO_ORANGE
                 focusColor = LOGO_ORANGE
+                unsafe("-fx-default-button", SAFETY_ORANGE)
+
             }
         }
         h1 {
@@ -24,11 +27,11 @@ class WorkerStylesheet : Stylesheet() {
     }
 }
 
-class ConerPalette {
-    companion object {
-        val TRAFFIC_CONE_ORANGE = c("#FF7900")
-        val LOGO_ORANGE = c("#F15A24")
-        val LOGO_ORANGE_SHADOW = c("#D33C0D")
-        val LOGO_DARK_GRAY = c("#808080")
-    }
+object ConerPalette {
+    val LOGO_ORANGE = c("#F15A24")
+    val LOGO_ORANGE_SHADOW = c("#D33C0D")
+    val LOGO_DARK_GRAY = c("#808080")
+
+    val TRAFFIC_CONE_ORANGE = c("#FF7900")
+    val SAFETY_ORANGE = c("#FF6700")
 }

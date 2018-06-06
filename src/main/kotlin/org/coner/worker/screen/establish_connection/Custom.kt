@@ -12,6 +12,7 @@ import org.coner.core.client.ApiException
 import org.coner.core.client.api.EventsApi
 import org.coner.worker.ConnectionPreferences
 import org.coner.worker.ConnectionPreferencesModel
+import org.coner.worker.WorkerStylesheet
 import tornadofx.*
 import java.net.URI
 
@@ -105,6 +106,7 @@ class CustomConnectionView : View() {
             buttonbar {
                 button(messages["button_connect"], ButtonBar.ButtonData.OK_DONE) {
                     id = "connect"
+                    addPseudoClass(WorkerStylesheet.default.name)
                     enableWhen { model.valid }
                     action {
                         val spec = AttemptCustomConerCoreConnection(

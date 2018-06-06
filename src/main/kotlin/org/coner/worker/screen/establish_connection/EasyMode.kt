@@ -5,6 +5,7 @@ import javafx.scene.layout.Priority
 import javafx.stage.FileChooser
 import org.coner.worker.ConnectionPreferences
 import org.coner.worker.ConnectionPreferencesModel
+import org.coner.worker.WorkerStylesheet
 import org.coner.worker.process.ConerCoreProcess
 import tornadofx.*
 import java.io.File
@@ -90,21 +91,24 @@ class EasyModeConnectionView : View() {
                     }
                 }
             }
-            button(messages["connect"]) {
-                id = "connect"
-                enableWhen(model.valid.and(serviceConnectionModel.valid))
-                action {
-                    val spec = AttemptCustomConerCoreConnection(
-                            applicationUri = serviceConnectionModel.applicationBaseUrl.value!!,
-                            adminUri = serviceConnectionModel.adminBaseUrl.value!!
-                    )
-                    runAsyncWithProgress {
-                        controller.testSettings(spec)
-                    } success {
-                        controller.onConnectSuccess(spec)
-                    } fail {
-                        alert(Alert.AlertType.ERROR, "Failed to connect", it.stackTrace.joinToString("\n"))
-                        controller.onConnectFail(spec)
+            buttonbar {
+                button(messages["connect"]) {
+                    id = "connect"
+                    addPseudoClass(WorkerStylesheet.default.name)
+                    enableWhen(model.valid.and(serviceConnectionModel.valid))
+                    action {
+                        val spec = AttemptCustomConerCoreConnection(
+                                applicationUri = serviceConnectionModel.applicationBaseUrl.value!!,
+                                adminUri = serviceConnectionModel.adminBaseUrl.value!!
+                        )
+                        runAsyncWithProgress {
+                            controller.testSettings(spec)
+                        } success {
+                            controller.onConnectSuccess(spec)
+                        } fail {
+                            alert(Alert.AlertType.ERROR, "Failed to connect", it.stackTrace.joinToString("\n"))
+                            controller.onConnectFail(spec)
+                        }
                     }
                 }
             }

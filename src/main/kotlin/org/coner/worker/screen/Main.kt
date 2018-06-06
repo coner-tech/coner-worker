@@ -38,7 +38,8 @@ class MainView : View() {
                 title = messages["close_alert_title"],
                 header = messages["close_alert_header"],
                 content = messages["close_alert_content"],
-                actionFn = { if (it == ButtonType.OK) onConfirmed() else onCancelled() }
+                actionFn = { if (it == ButtonType.OK) onConfirmed() else onCancelled() },
+                owner = currentWindow
         )
     }
 }
