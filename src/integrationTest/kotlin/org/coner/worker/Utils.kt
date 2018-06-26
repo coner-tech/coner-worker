@@ -14,7 +14,7 @@ class ConerCoreProcessUtils {
         private val VERSION = System.getenv(VERSION_PROPERTY) ?: System.getProperty(VERSION_PROPERTY)
 
         val PATH_TO_JAR = "it/environment/coner-core-service-$VERSION.jar"
-        val PATH_TO_CONFIG = "it/environment/test.yml"
+        val PATH_TO_CONFIG = "it/config/coner-core-service.yml"
 
         init {
             // verify needed environment variable / system property defined

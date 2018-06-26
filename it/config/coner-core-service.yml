@@ -1,0 +1,28 @@
+# Database settings.
+database:
+    # the name of your JDBC driver
+    driverClass: org.hsqldb.jdbc.JDBCDriver
+    # the username
+    user: sa
+    # the password
+    password:
+    # the JDBC URL
+    url: jdbc:hsqldb:mem:coner-core
+    validationQuery: SELECT * FROM INFORMATION_SCHEMA.SYSTEM_TABLES
+    properties:
+        hibernate.dialect: org.hibernate.dialect.HSQLDialect
+        hibernate.hbm2ddl.auto: create
+        org.coner.core.task.HsqlDatabaseManagerSwingTask: false
+
+# Swagger settings
+swagger:
+    resourcePackage: org.coner.core.resource
+
+
+# Logging settings.
+logging:
+    loggers:
+        org.hibernate.SQL: INFO
+
+httpClient:
+    timeout: 1s
