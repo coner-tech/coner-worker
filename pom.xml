@@ -17,7 +17,7 @@
         <junit.version>4.12</junit.version>
         <testfx.version>4.0.12-alpha</testfx.version>
         <jsonassert.version>1.5.0</jsonassert.version>
-        <coner-core.version>0.1.24</coner-core.version>
+        <coner-core.version>0.1.25-SNAPSHOT</coner-core.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <guice.version>4.1.0</guice.version>
         <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
@@ -238,6 +238,17 @@
             <id>jcenter</id>
             <name>Bintray jcenter</name>
             <url>https://jcenter.bintray.com</url>
+        </repository>
+        <repository>
+            <id>jfrog-oss-snapshots</id>
+            <name>JFrog OSS Artifactory Snapshots</name>
+            <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
         </repository>
     </repositories>
 
