@@ -66,6 +66,5 @@ class EstablishConnectionViewTest {
         page.clickCustomConnectionTab()
         page.robot.clickOn(page.customPage.adminPort)
         page.clickEasyModeTab()
-        page.robot.clickOn(page.easyModePage.pathToConfig)
     }
 }

@@ -1,14 +1,11 @@
 package org.coner.worker.screen.establish_connection
 
-import javafx.scene.control.Alert
-import javafx.scene.layout.Priority
-import javafx.stage.FileChooser
 import org.coner.worker.ConnectionPreferences
 import org.coner.worker.ConnectionPreferencesModel
-import org.coner.worker.WorkerStylesheet
+import org.coner.worker.controller.MavenRepo
+import org.coner.worker.model.ConerWorkerPropertiesModel
 import org.coner.worker.process.ConerCoreProcess
 import tornadofx.*
-import java.io.File
 
 class EasyModeConnectionController : Controller() {
     val model by inject<EasyModeConnectionModel>()
@@ -47,70 +44,14 @@ class EasyModeConnectionView : View() {
     val model by inject<EasyModeConnectionModel>()
     val controller by inject<EasyModeConnectionController>()
     val serviceConnectionModel by inject<ServiceConnectionModel>()
-    override val root = form {
+    val mavenRepo by inject<MavenRepo>()
+    val conerWorkerProperties by inject<ConerWorkerPropertiesModel>()
+
+    override val root = vbox {
         id = "easy_mode"
-        fieldset(messages["coner_core"]) {
-            field(messages["path_to_jar"]) {
-                hbox(spacing = 10) {
-                    textfield(model.pathToJar) {
-                        id = "path_to_jar"
-                        required()
-                        validator {
-                            if (it == null) return@validator null
-                            if (!File(it).exists()) error(messages["file_not_exist"]) else null
-                        }
-                        hgrow = Priority.ALWAYS
-                    }
-                    button(messages["select"]) {
-                        action {
-                            val filters = arrayOf(
-                                    FileChooser.ExtensionFilter(messages["filter_jar_description"], "*.jar")
-                            )
-                            val file = chooseFile(messages["path_to_jar"], filters).firstOrNull()
-                            model.pathToJar.value = file?.toString()
-                        }
-                    }
-                }
-            }
-            field(messages["path_to_config"]) {
-                hbox(spacing = 10) {
-                    textfield(model.pathToConfig) {
-                        id = "path_to_config"
-                        required()
-                        validator {
-                            if (it == null) return@validator null
-                            if (!File(it).exists()) error(messages["file_not_exist"]) else null
-                        }
-                        hgrow = Priority.ALWAYS
-                    }
-                    button(messages["select"]) {
-                        action {
-                            val file = chooseFile(title = messages["path_to_config"], filters = emptyArray()).firstOrNull()
-                            model.pathToConfig.value = file?.toString()
-                        }
-                    }
-                }
-            }
-            buttonbar {
-                button(messages["connect"]) {
-                    id = "connect"
-                    addPseudoClass(WorkerStylesheet.default.name)
-                    enableWhen(model.valid.and(serviceConnectionModel.valid))
-                    action {
-                        val spec = AttemptCustomConerCoreConnection(
-                                applicationUri = serviceConnectionModel.applicationBaseUrl.value!!,
-                                adminUri = serviceConnectionModel.adminBaseUrl.value!!
-                        )
-                        runAsyncWithProgress {
-                            controller.testSettings(spec)
-                        } success {
-                            controller.onConnectSuccess(spec)
-                        } fail {
-                            alert(Alert.AlertType.ERROR, "Failed to connect", it.stackTrace.joinToString("\n"))
-                            controller.onConnectFail(spec)
-                        }
-                    }
-                }
+        button("Resolve Coner Core") {
+            action {
+                mavenRepo.resolve("org.coner:coner-core-service:${conerWorkerProperties.conerCoreVersion}")
             }
         }
     }
