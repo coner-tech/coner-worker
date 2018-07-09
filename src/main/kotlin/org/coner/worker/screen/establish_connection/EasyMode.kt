@@ -51,7 +51,9 @@ class EasyModeConnectionView : View() {
         id = "easy_mode"
         button("Resolve Coner Core") {
             action {
-                mavenRepo.resolve("org.coner:coner-core-service:${conerWorkerProperties.conerCoreVersion}")
+                runAsyncWithProgress {
+                    mavenRepo.resolve("org.coner:coner-core-service:${conerWorkerProperties.conerCoreVersion}")
+                }
             }
         }
     }

@@ -36,19 +36,28 @@ class MavenRepo : Controller() {
         }
     }
 
+    private val remoteRepos: List<RemoteRepository> by lazy {
+        fun remoteRepo(id: String, url: String): RemoteRepository {
+            return RemoteRepository.Builder(id, "default", url).build()
+        }
+        listOf(
+                remoteRepo("jcenter", "http://jcenter.bintray.com/"),
+                remoteRepo("jfrog-oss-snapshots", "https://oss.jfrog.org/artifactory/oss-snapshot-local")
+        )
+    }
+
     init {
         Files.createDirectories(repoPath)
     }
 
-    fun resolve(artifact: String) {
-        val jcenter = RemoteRepository.Builder("jcenter", "default", "http://jcenter.bintray.com/").build()
+    fun resolve(artifactAsString: String) {
         val collectRequest = CollectRequest()
-        val artifact = DefaultArtifact(artifact)
+        val artifact = DefaultArtifact(artifactAsString)
         collectRequest.rootArtifact = artifact
-        collectRequest.addRepository(jcenter)
+        remoteRepos.forEach { collectRequest.addRepository(it) }
         val result = repoSystem.collectDependencies(session, collectRequest)
         println("result: $result")
-        val resolveDependenciesResult = repoSystem.resolveArtifact(session, ArtifactRequest(artifact, listOf(jcenter), null))
+        val resolveDependenciesResult = repoSystem.resolveArtifact(session, ArtifactRequest(artifact, remoteRepos, null))
         println("resolveDependenciesResult: $resolveDependenciesResult")
     }
 }
