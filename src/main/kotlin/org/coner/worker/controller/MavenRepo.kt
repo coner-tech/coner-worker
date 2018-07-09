@@ -6,52 +6,49 @@ import org.eclipse.aether.RepositorySystemSession
 import org.eclipse.aether.artifact.DefaultArtifact
 import org.eclipse.aether.collection.CollectRequest
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory
-import org.eclipse.aether.graph.Dependency
 import org.eclipse.aether.repository.LocalRepository
 import org.eclipse.aether.repository.RemoteRepository
-import org.eclipse.aether.resolution.DependencyRequest
+import org.eclipse.aether.resolution.ArtifactRequest
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory
 import org.eclipse.aether.spi.connector.transport.TransporterFactory
 import org.eclipse.aether.transport.file.FileTransporterFactory
 import org.eclipse.aether.transport.http.HttpTransporterFactory
 import tornadofx.*
+import java.nio.file.Files
 
 class MavenRepo : Controller() {
 
+    private val repoPath = app.configBasePath.resolve("maven")
+
     private val repoSystem: RepositorySystem by lazy {
-        MavenRepositorySystemUtils.newServiceLocator().apply {
-            addService(RepositoryConnectorFactory::class.java, BasicRepositoryConnectorFactory::class.java)
-            addService(TransporterFactory::class.java, FileTransporterFactory::class.java)
-            addService(TransporterFactory::class.java, HttpTransporterFactory::class.java)
-        }.getService(RepositorySystem::class.java)
+        MavenRepositorySystemUtils.newServiceLocator()
+                .addService(TransporterFactory::class.java, FileTransporterFactory::class.java)
+                .addService(TransporterFactory::class.java, HttpTransporterFactory::class.java)
+                .addService(RepositoryConnectorFactory::class.java, BasicRepositoryConnectorFactory::class.java)
+                .getService(RepositorySystem::class.java)
     }
 
     private val session: RepositorySystemSession by lazy {
         MavenRepositorySystemUtils.newSession().apply {
             isOffline = false
-            val localRepo = LocalRepository(app.configBasePath.resolve("maven").toFile())
+            val localRepo = LocalRepository(repoPath.toFile())
             localRepositoryManager = repoSystem.newLocalRepositoryManager(this, localRepo)
         }
     }
 
-    fun resolve(artifact: String) {
-        val dependency = Dependency(DefaultArtifact(artifact), "runtime")
-        val jcenter = RemoteRepository.Builder("jcenter", "default", "http://jcenter.bintray.com")
-                .build()
-        val collectRequest = CollectRequest().apply {
-            root = dependency
-            addRepository(jcenter)
-        }
-        val node = repoSystem.collectDependencies(session, collectRequest).root
-        val dependencyRequest = DependencyRequest().apply {
-            root = node
-        }
-        val dependencyResult = repoSystem.resolveDependencies(session, dependencyRequest)
-        dependencyResult.artifactResults.forEach {
-            println(">>> ArtifactResult")
-            println("GroupId: ${it.artifact}")
-            println("<<< ArtifactResult")
-        }
+    init {
+        Files.createDirectories(repoPath)
+    }
 
+    fun resolve(artifact: String) {
+        val jcenter = RemoteRepository.Builder("jcenter", "default", "http://jcenter.bintray.com/").build()
+        val collectRequest = CollectRequest()
+        val artifact = DefaultArtifact(artifact)
+        collectRequest.rootArtifact = artifact
+        collectRequest.addRepository(jcenter)
+        val result = repoSystem.collectDependencies(session, collectRequest)
+        println("result: $result")
+        val resolveDependenciesResult = repoSystem.resolveArtifact(session, ArtifactRequest(artifact, listOf(jcenter), null))
+        println("resolveDependenciesResult: $resolveDependenciesResult")
     }
 }
