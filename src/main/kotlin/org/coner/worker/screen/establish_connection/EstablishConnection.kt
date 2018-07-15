@@ -3,6 +3,7 @@ package org.coner.worker.screen.establish_connection
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.TabPane
+import javafx.scene.layout.Priority
 import org.coner.worker.ConnectionPreferencesModel
 import org.coner.worker.WorkerStylesheet
 import tornadofx.*
@@ -21,6 +22,7 @@ class EstablishConnectionView : View() {
         tabpane {
             id = "tabs"
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+            vgrow = Priority.ALWAYS
             tab(find<EasyModeConnectionView>()) {
                 id = "easy-mode-tab"
             }

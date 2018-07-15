@@ -180,7 +180,7 @@
                         <phase>generate-resources</phase>
                         <configuration>
                             <outputFile>
-                                ${project.build.outputDirectory}/org/coner/worker/model/ConerWorkerPropertiesModel.properties
+                                ${project.build.outputDirectory}/org/coner/worker/maven.properties
                             </outputFile>
                         </configuration>
                     </execution>
