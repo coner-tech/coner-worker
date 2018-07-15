@@ -75,22 +75,35 @@ class EasyModeConnectionView : View() {
             alignment = Pos.CENTER
             button(messages["use_easy_mode"]) {
                 id = "use_easy_mode"
+                isDefaultButton = true
                 action {
                     useEasyModeTask = runAsync {
                         log.entering(this@EasyModeConnectionView::class.simpleName.toString(), "useEasyMode")
                         controller.useEasyMode()
                         log.exiting(this@EasyModeConnectionView::class.simpleName.toString(), "useEasyMode")
                     } success {
-
+                        dialog {
+                            text("Hello")
+                        }
                     } fail {
                         useEasyModeTask = null
-                        errorMessage = it.message
+                        dialog(
+                                title = messages["use_easy_mode_error_title"],
+                                owner = currentWindow
+                        ) {
+                            textarea(it.message) {
+                                isEditable = false
+                                isWrapText = true
+                                prefWidthProperty().bind(this@dialog.widthProperty())
+                                prefHeightProperty().bind(this@dialog.heightProperty())
+                            }
+                        }
                     }
                 }
             }
-            text(errorMessageProperty)
             visibleWhen { useEasyModeTaskProperty.isNull }
         }
+
         vbox(spacing = 8) {
             id = "easy_mode_progress"
             alignment = Pos.CENTER
