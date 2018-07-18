@@ -6,7 +6,7 @@ import javafx.scene.control.ButtonType
 import javafx.stage.WindowEvent
 import org.coner.worker.ConerPalette
 import org.coner.worker.ConnectionPreferencesController
-import org.coner.worker.process.ConerCoreProcess
+import org.coner.worker.controller.EasyModeController
 import org.coner.worker.screen.establish_connection.EstablishConnectionView
 import tornadofx.*
 
@@ -51,7 +51,7 @@ class MainCenterView : View() {
 class MainController : Controller() {
 
     val connectionPreferencesController by inject<ConnectionPreferencesController>()
-    val conerCoreProcess: ConerCoreProcess by di()
+    val easyMode: EasyModeController by inject()
 
     fun onViewInit() {
         if (!connectionPreferencesController.model.item.saved) {
@@ -62,9 +62,9 @@ class MainController : Controller() {
     }
 
     fun onCloseRequest(windowEvent: WindowEvent) {
-        if (!conerCoreProcess.started) return
+        if (!easyMode.model.started) return
         find<MainView>().showCloseRequestConfirmation(
-                onConfirmed = { conerCoreProcess.stop() },
+                onConfirmed = { easyMode.stop() },
                 onCancelled = { windowEvent.consume() }
         )
     }

@@ -7,8 +7,10 @@ import io.mockk.verify
 import javafx.stage.WindowEvent
 import javafx.util.Duration
 import org.coner.worker.ConnectionPreferencesController
+import org.coner.worker.controller.EasyModeController
 import org.coner.worker.di.GuiceDiContainer
 import org.coner.worker.di.MockkProcessModule
+import org.coner.worker.model.EasyModeModel
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -27,6 +29,8 @@ class MainViewTest {
         FX.dicontainer = GuiceDiContainer(MockkProcessModule())
         with(app.scope) {
             set(mockk<MainController>(relaxed = true))
+            set(mockk<EasyModeController>(relaxed = true))
+            set(mockk<EasyModeModel>(relaxed = true))
         }
         FxToolkit.registerPrimaryStage()
         FxToolkit.setupApplication { app }
@@ -77,6 +81,8 @@ class MainControllerTest {
         with(app.scope) {
             set(mockk<MainView>(relaxed = true))
             set(mockk<ConnectionPreferencesController>())
+            set(mockk<EasyModeController>(relaxed = true))
+            set(mockk<EasyModeModel>(relaxed = true))
         }
         FxToolkit.registerPrimaryStage()
         FxToolkit.setupApplication { app }
@@ -92,17 +98,17 @@ class MainControllerTest {
 
     @Test
     fun whenCloseRequestedAndConerCoreProcessNotStartedItShouldNotAlert() {
-        every { controller.conerCoreProcess.started }.returns(false)
+        every { controller.easyMode.model.started }.returns(false)
         val windowEvent: WindowEvent = mockk()
 
         controller.onCloseRequest(windowEvent)
 
-        verify { controller.conerCoreProcess.started }
+        verify { controller.easyMode.model.started }
     }
 
     @Test
     fun whenCloseRequestedAndConerCoreProcessStartedItShouldAlert() {
-        every { controller.conerCoreProcess.started }.returns(true)
+        every { controller.easyMode.model.started }.returns(true)
         val windowEvent: WindowEvent = mockk()
 
         controller.onCloseRequest(windowEvent)
@@ -113,7 +119,7 @@ class MainControllerTest {
     @Test
     fun whenCloseRequestedAndConerCoreProcessStartedUserConfirmsItShouldStopProcess() {
         val windowEvent: WindowEvent = mockk()
-        every { controller.conerCoreProcess.started }.returns(true)
+        every { controller.easyMode.model.started }.returns(true)
         val onConfirmedSlot = slot<() -> Unit>()
         val onCancelledSlot = slot<() -> Unit>()
         every {
@@ -122,17 +128,18 @@ class MainControllerTest {
                     onCancelled = capture(onCancelledSlot)
             )
         }.answers { onConfirmedSlot.captured() }
-        every { controller.conerCoreProcess.stop() }.answers { }
+        every { controller.easyMode.stop() }.answers { }
 
         controller.onCloseRequest(windowEvent)
 
-        verify { controller.conerCoreProcess.stop() }
+        val easyModeController = find<EasyModeController>()
+        verify { easyModeController.stop() }
     }
 
     @Test
     fun whenCloseRequestedAndConerCoreProcessStartedUserCancelsItShouldNotStopProcess() {
         val windowEvent: WindowEvent = mockk()
-        every { controller.conerCoreProcess.started }.returns(true)
+        every { controller.easyMode.model.started }.returns(true)
         val onConfirmedSlot = slot<() -> Unit>()
         val onCancelledSlot = slot<() -> Unit>()
         every {
@@ -140,11 +147,12 @@ class MainControllerTest {
                     onConfirmed = capture(onConfirmedSlot),
                     onCancelled = capture(onCancelledSlot)
             )
-        }.answers { onCancelledSlot.captured }
-        every { controller.conerCoreProcess.stop() }.answers { }
+        }.answers { onCancelledSlot.captured() }
+        every { windowEvent.consume() }.answers {  }
 
         controller.onCloseRequest(windowEvent)
 
-        verify(exactly = 0) { controller.conerCoreProcess.stop() }
+        val easyModeController = find<EasyModeController>()
+        verify(exactly = 0) { easyModeController.stop() }
     }
 }

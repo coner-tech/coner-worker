@@ -1,16 +1,17 @@
 package org.coner.worker.controller
 
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils
+import org.coner.worker.exception.MavenException
 import org.coner.worker.model.MavenModel
 import org.eclipse.aether.RepositorySystem
 import org.eclipse.aether.RepositorySystemSession
-import org.eclipse.aether.artifact.Artifact
 import org.eclipse.aether.artifact.DefaultArtifact
 import org.eclipse.aether.collection.CollectRequest
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory
 import org.eclipse.aether.repository.LocalRepository
 import org.eclipse.aether.repository.RemoteRepository
 import org.eclipse.aether.resolution.ArtifactRequest
+import org.eclipse.aether.resolution.ArtifactResult
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory
 import org.eclipse.aether.spi.connector.transport.TransporterFactory
 import org.eclipse.aether.transfer.TransferEvent
@@ -22,9 +23,9 @@ import java.nio.file.Files
 import java.util.concurrent.atomic.AtomicLong
 
 class MavenController : Controller(), TransferListener {
-    private val repoPath = app.configBasePath.resolve("maven")
+    val model: MavenModel by inject()
 
-    private val model: MavenModel by inject()
+    private val repoPath = app.configBasePath.resolve("maven")
     private val repoSystem: RepositorySystem by lazy {
         MavenRepositorySystemUtils.newServiceLocator()
                 .addService(TransporterFactory::class.java, FileTransporterFactory::class.java)
@@ -56,15 +57,17 @@ class MavenController : Controller(), TransferListener {
         Files.createDirectories(repoPath)
     }
 
-    fun resolve(artifactKey: MavenModel.ArtifactKey): Artifact {
+    fun resolve(artifactKey: MavenModel.ArtifactKey): ArtifactResult {
         val collectRequest = CollectRequest()
         val version = model.mavenProperties[artifactKey.versionProperty]
         val artifact = DefaultArtifact("${artifactKey.groupId}:${artifactKey.artifactId}:$version")
         collectRequest.rootArtifact = artifact
         remoteRepos.forEach { collectRequest.addRepository(it) }
-        val result = repoSystem.resolveArtifact(session, ArtifactRequest(artifact, remoteRepos, null))
-        model.artifacts[artifactKey] = result.artifact
-        return result.artifact
+        try {
+            return repoSystem.resolveArtifact(session, ArtifactRequest(artifact, remoteRepos, null))
+        } catch (t: Exception) {
+            throw MavenException("Failed to resolve artifact: $artifact", t)
+        }
     }
 
     override fun transferStarted(event: TransferEvent?) {

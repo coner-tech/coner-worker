@@ -30,7 +30,7 @@ class ConerCoreProcess @Inject constructor(private val processBuilder: ProcessBu
         var line: String?
         while (!verifiedStarted && process!!.isAlive) {
             line = buffer.readLine()
-            verifiedStarted = line.contains("org.eclipse.jetty.server.Server: Started")
+            verifiedStarted = line?.contains("org.eclipse.jetty.server.Server: Started") == true
         }
         if (!verifiedStarted) throw ManagedProcess.FailedToStartException(this)
     }
