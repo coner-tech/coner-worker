@@ -1,5 +1,8 @@
 package org.coner.worker.screen.establish_connection
 
+import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Orientation
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonBar
@@ -11,14 +14,13 @@ import org.coner.core.client.ApiClient
 import org.coner.core.client.ApiException
 import org.coner.core.client.api.EventsApi
 import org.coner.worker.ConnectionPreferences
-import org.coner.worker.ConnectionPreferencesModel
 import org.coner.worker.WorkerStylesheet
 import tornadofx.*
 import java.net.URI
 
 class CustomConnectionController : Controller() {
 
-    val connectionPreferencesModel: ConnectionPreferencesModel by inject()
+    val model: CustomConnectionModel by inject()
 
     fun connect(attempt: AttemptCustomConerCoreConnection) {
         // request health
@@ -42,11 +44,12 @@ class CustomConnectionController : Controller() {
     }
 
     fun onConnectSuccess(spec: AttemptCustomConerCoreConnection) {
-        connectionPreferencesModel.item = ConnectionPreferences().apply {
-            mode = ConnectionPreferences.Mode.Custom
-            conerCoreServiceUrl = spec.applicationUri.toString()
+        model.connectionPreferences = ConnectionPreferences(
+            saved = false,
+            mode = ConnectionPreferences.Mode.CUSTOM,
+            conerCoreServiceUrl = spec.applicationUri.toString(),
             conerCoreAdminUrl = spec.adminUri.toString()
-        }
+        )
     }
 
     fun onConnectFail(spec: AttemptCustomConerCoreConnection) {
@@ -54,11 +57,41 @@ class CustomConnectionController : Controller() {
     }
 }
 
+class CustomConnectionModel : ViewModel() {
+    val protocolProperty = SimpleStringProperty(this, "protocol", "http")
+    var protocol by protocolProperty
+
+    val hostProperty = SimpleStringProperty(this, "host", "localhost")
+    var host by hostProperty
+
+    val applicationPortProperty = SimpleIntegerProperty(this, "applicationPort", 8080)
+    var applicationPort by applicationPortProperty
+
+    val adminPortProperty = SimpleIntegerProperty(this, "adminPort", 8081)
+    var adminPort by adminPortProperty
+
+    val applicationBaseUrl = objectBinding(protocolProperty, hostProperty, applicationPortProperty) {
+        URI("$protocol://$host:$applicationPort")
+    }
+    val adminBaseUrl = objectBinding(protocolProperty, hostProperty, adminPortProperty) {
+        URI("$protocol://$host:$adminPort")
+    }
+    val connectionPreferencesProperty = SimpleObjectProperty<ConnectionPreferences>(this, "connectionPreferences")
+    var connectionPreferences by connectionPreferencesProperty
+
+    fun updateFromUris(appUri: URI, adminUri: URI) {
+        protocol = appUri.scheme
+        host = appUri.host
+        applicationPort = appUri.port
+        adminPort = adminUri.port
+    }
+}
+
 
 class AttemptCustomConerCoreConnection(val applicationUri: URI, val adminUri: URI)
 
 class CustomConnectionView : View() {
-    val model: ServiceConnectionModel by inject()
+    val model: CustomConnectionModel by inject()
     val controller: CustomConnectionController by inject()
 
     private val portNumberConverter = NumberStringConverter("#####")
@@ -72,32 +105,32 @@ class CustomConnectionView : View() {
             hbox {
                 spacing = 8.0
                 field(messages["field_protocol"]) {
-                    choicebox(model.protocol, listOf("http", "https")) {
+                    choicebox(model.protocolProperty, listOf("http", "https")) {
                         validator { if (it == null) error("Choose a protocol") else null }
                         id = "protocol"
                     }
                 }
                 field(messages["field_host"]) {
-                    textfield(model.host) {
+                    textfield(model.hostProperty) {
                         id = "host"
                         required()
                         stripWhitespace()
                     }
                 }
                 field(messages["field_application_port"]) {
-                    textfield(model.applicationPort) {
+                    textfield(model.applicationPortProperty) {
                         id = "application_port"
                         required()
-                        textFormatter = TextFormatter(portNumberConverter, model.item.applicationPort)
+                        textFormatter = TextFormatter(portNumberConverter, model.applicationPort)
                         stripNonInteger()
                         requireValidPortNumber()
                     }
                 }
                 field(messages["field_admin_port"]) {
-                    textfield(model.adminPort) {
+                    textfield(model.adminPortProperty) {
                         id = "admin_port"
                         required()
-                        textFormatter = TextFormatter(portNumberConverter, model.item.adminPort)
+                        textFormatter = TextFormatter(portNumberConverter, model.adminPort)
                         stripNonInteger()
                         requireValidPortNumber()
                     }
@@ -130,7 +163,6 @@ class CustomConnectionView : View() {
 
     init {
         title = messages["title"]
-
     }
 }
 

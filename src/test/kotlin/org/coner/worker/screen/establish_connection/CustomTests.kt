@@ -30,7 +30,7 @@ class CustomConnectionViewTest {
         stage.width = 600.0
         val app = App(CustomConnectionView::class)
         with(app.scope) {
-            set(ServiceConnectionModel())
+            set(CustomConnectionModel())
             set(ConnectionPreferencesModel())
             set(mockk<CustomConnectionController>(relaxed = true))
         }
@@ -47,11 +47,11 @@ class CustomConnectionViewTest {
 
     @Test
     fun itShouldStartWithDefaultValues() {
-        FxAssert.verifyThat(page.protocol) { it.value == null }
-        FxAssert.verifyThat(page.host, TextInputControlMatchers.hasText(null as String?))
-        FxAssert.verifyThat(page.applicationPort, TextInputControlMatchers.hasText("0"))
-        FxAssert.verifyThat(page.adminPort, TextInputControlMatchers.hasText("0"))
-        FxAssert.verifyThat(page.connect, NodeMatchers.isDisabled())
+        FxAssert.verifyThat(page.protocol) { it.value == "http" }
+        FxAssert.verifyThat(page.host, TextInputControlMatchers.hasText("localhost"))
+        FxAssert.verifyThat(page.applicationPort, TextInputControlMatchers.hasText("8080"))
+        FxAssert.verifyThat(page.adminPort, TextInputControlMatchers.hasText("8081"))
+        FxAssert.verifyThat(page.connect, NodeMatchers.isEnabled())
     }
 
     @Test
@@ -183,18 +183,18 @@ class CustomConnectionViewTest {
         }
     }
 
-    private fun ServiceConnectionModel.fillRealisticValues() {
+    private fun CustomConnectionModel.fillRealisticValues() {
         FX.runAndWait {
             setToRealisticValues(page.realisticValues)
         }
     }
 }
 
-private fun ServiceConnectionModel.setToRealisticValues(realisticValues: ConerCoreServiceConnectionDetailsPage.RealisticValues) {
+private fun CustomConnectionModel.setToRealisticValues(realisticValues: ConerCoreServiceConnectionDetailsPage.RealisticValues) {
     with(realisticValues) {
-        protocol.value = applicationUri.scheme
-        host.value = applicationUri.host
-        applicationPort.value = applicationUri.port
-        adminPort.value = adminUri.port
+        protocol = applicationUri.scheme
+        host = applicationUri.host
+        applicationPort = applicationUri.port
+        adminPort = adminUri.port
     }
 }

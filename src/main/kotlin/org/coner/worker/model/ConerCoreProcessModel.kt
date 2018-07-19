@@ -10,5 +10,10 @@ class ConerCoreProcessModel : ViewModel() {
     val configFileProperty = SimpleStringProperty()
     var configFile by configFileProperty
 
+    val serviceUrlProperty = SimpleStringProperty("http://localhost:8080")
+    var serviceUrl by serviceUrlProperty
+
+    val adminUrlProperty = SimpleStringProperty("http://localhost:8081")
+    var adminUrl by adminUrlProperty
 
 }

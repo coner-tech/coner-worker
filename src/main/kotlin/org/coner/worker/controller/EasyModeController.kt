@@ -1,5 +1,6 @@
 package org.coner.worker.controller
 
+import org.coner.worker.ConnectionPreferences
 import org.coner.worker.exception.EasyModeException
 import org.coner.worker.model.EasyModeModel
 import tornadofx.*
@@ -27,6 +28,15 @@ class EasyModeController : Controller() {
 
     fun checkHealth() {
         conerCoreProcessController.checkHealth()
+    }
+
+    fun buildConnectionPreferences(): ConnectionPreferences {
+        return ConnectionPreferences(
+                saved = false,
+                mode = ConnectionPreferences.Mode.EASY,
+                conerCoreServiceUrl = conerCoreProcessController.model.serviceUrl,
+                conerCoreAdminUrl = conerCoreProcessController.model.adminUrl
+        )
     }
 }
 

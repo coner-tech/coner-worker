@@ -3,6 +3,7 @@ package org.coner.worker.screen.establish_connection
 import javafx.beans.property.SimpleObjectProperty
 import javafx.concurrent.Task
 import javafx.geometry.Pos
+import org.coner.worker.ConnectionPreferences
 import org.coner.worker.controller.EasyModeController
 import org.coner.worker.controller.MavenController
 import tornadofx.*
@@ -19,17 +20,25 @@ class EasyModeConnectionController : Controller() {
     }
 
     fun onUseEasyModeSuccess() {
-        // TODO
+        model.useEasyModeTask = null
+        model.connectionPreferences = easyMode.buildConnectionPreferences()
+        model.commit()
     }
 
-    fun onUseEasyModeFail() {
+    fun onUseEasyModeFail(throwable: Throwable) {
         easyMode.stop()
+        model.useEasyModeTask = null
+        find<EasyModeConnectionView>().showUseEasyModeError(throwable)
     }
 }
 
 class EasyModeConnectionModel : ViewModel() {
     val useEasyModeTaskProperty = SimpleObjectProperty<Task<Unit>>()
     var useEasyModeTask by useEasyModeTaskProperty
+
+    val connectionPreferencesProperty = SimpleObjectProperty<ConnectionPreferences>()
+    var connectionPreferences by connectionPreferencesProperty
+
 }
 
 class EasyModeConnectionView : View() {
@@ -50,9 +59,9 @@ class EasyModeConnectionView : View() {
                     model.useEasyModeTask = runAsync {
                         controller.useEasyMode()
                     } success {
-                        onUseEasyModeSuccess()
+                        controller.onUseEasyModeSuccess()
                     } fail {
-                        onUseEasyModeFail(it)
+                        controller.onUseEasyModeFail(it)
                     }
                 }
             }
@@ -80,14 +89,7 @@ class EasyModeConnectionView : View() {
         model.useEasyModeTask = null
     }
 
-    fun onUseEasyModeSuccess() {
-        controller.onUseEasyModeSuccess()
-        model.useEasyModeTask = null
-    }
-
-    fun onUseEasyModeFail(throwable: Throwable) {
-        model.useEasyModeTask = null
-        controller.onUseEasyModeFail()
+    fun showUseEasyModeError(throwable: Throwable) {
         dialog(
                 title = messages["use_easy_mode_error_title"],
                 owner = currentWindow

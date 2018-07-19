@@ -44,27 +44,40 @@ private fun ConfigProperties.saveConnectionPreferences(item: ConnectionPreferenc
     save()
 }
 
+class ConnectionPreferences(
+
+) {
+    constructor(
+            saved: Boolean,
+            mode: Mode,
+            conerCoreServiceUrl: String,
+            conerCoreAdminUrl: String
+    ) : this() {
+        this.saved = saved
+        this.mode = mode
+        this.conerCoreServiceUrl = conerCoreServiceUrl
+        this.conerCoreAdminUrl = conerCoreAdminUrl
+    }
+    val savedProperty = SimpleBooleanProperty(this, "saved")
+    var saved by savedProperty
+    val modeProperty = SimpleObjectProperty<Mode?>(this, "mode")
+    var mode by modeProperty
+    val conerCoreServiceUrlProperty = SimpleStringProperty(this, "conerCoreServiceUrl")
+    var conerCoreServiceUrl by conerCoreServiceUrlProperty
+    val conerCoreAdminUrlProperty = SimpleStringProperty(this, "conerCoreAdminUrl")
+    var conerCoreAdminUrl by conerCoreAdminUrlProperty
+
+    enum class Mode {
+        EASY,
+        CUSTOM
+    }
+
+    internal val properties = arrayOf(savedProperty, modeProperty, conerCoreServiceUrlProperty, conerCoreAdminUrlProperty)
+}
+
 class ConnectionPreferencesModel : ItemViewModel<ConnectionPreferences>() {
     val saved = bind(ConnectionPreferences::savedProperty)
     val mode = bind(ConnectionPreferences::modeProperty)
     val conerCoreServiceUrl = bind(ConnectionPreferences::conerCoreServiceUrlProperty)
     val conerCoreAdminUrl = bind(ConnectionPreferences::conerCoreAdminUrlProperty)
-}
-
-class ConnectionPreferences {
-    val savedProperty = SimpleBooleanProperty(this, "saved", false)
-    var saved by savedProperty
-    val modeProperty = SimpleObjectProperty<Mode?>(this, "mode", Mode.Easy)
-    var mode by modeProperty
-    val conerCoreServiceUrlProperty = SimpleStringProperty(this, "conerCoreServiceUrl", "http://localhost:8080")
-    var conerCoreServiceUrl by conerCoreServiceUrlProperty
-    val conerCoreAdminUrlProperty = SimpleStringProperty(this, "conerCoreAdminUrl", "http://localhost:8081")
-    var conerCoreAdminUrl by conerCoreAdminUrlProperty
-
-    enum class Mode {
-        Easy,
-        Custom
-    }
-
-    internal val properties = arrayOf(savedProperty, modeProperty, conerCoreServiceUrlProperty, conerCoreAdminUrlProperty)
 }

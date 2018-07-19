@@ -1,13 +1,11 @@
 package org.coner.worker.screen.establish_connection
 
-import javafx.beans.property.SimpleIntegerProperty
-import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.TabPane
 import javafx.scene.layout.Priority
+import org.coner.worker.ConnectionPreferences
 import org.coner.worker.ConnectionPreferencesModel
 import org.coner.worker.WorkerStylesheet
 import tornadofx.*
-import java.net.URI
 
 class EstablishConnectionView : View() {
 
@@ -36,52 +34,41 @@ class EstablishConnectionView : View() {
         title = messages["title"]
         controller.noOp()
     }
+
+    override fun onDock() {
+        super.onDock()
+        controller.startListeningForConnectionPreferences()
+
+    }
+
+    override fun onUndock() {
+        super.onUndock()
+        controller.stopListeningForConnectionPreferences()
+    }
 }
 
 class EstablishConnectionController : Controller() {
 
     val connectionPreferencesModel: ConnectionPreferencesModel by inject()
-    val conerCoreServiceConnectionModel: ServiceConnectionModel by inject()
-
-    init {
-        val appUri = URI(connectionPreferencesModel.item.conerCoreServiceUrl)
-        val adminUri = URI(connectionPreferencesModel.item.conerCoreAdminUrl)
-        conerCoreServiceConnectionModel.updateFromUris(appUri, adminUri)
-    }
+    val easyModeConnectionModel: EasyModeConnectionModel by inject()
+    val customConnectionModel: CustomConnectionModel by inject()
 
     fun noOp() {
         // no-op
         // needed to guarantee controller init
     }
-}
 
-class ServiceConnection {
-    val protocolProperty = SimpleStringProperty(this, "protocol")
-    var protocol by protocolProperty
-    val hostProperty = SimpleStringProperty(this, "host")
-    var host by hostProperty
-    val applicationPortProperty = SimpleIntegerProperty(this, "applicationPort")
-    var applicationPort by applicationPortProperty
-    val adminPortProperty = SimpleIntegerProperty(this, "adminPort")
-    var adminPort by adminPortProperty
-}
-
-class ServiceConnectionModel : ItemViewModel<ServiceConnection>(initialValue = ServiceConnection()) {
-    val protocol = bind(ServiceConnection::protocolProperty)
-    val host = bind(ServiceConnection::hostProperty)
-    val applicationPort = bind(ServiceConnection::applicationPortProperty)
-    val adminPort = bind(ServiceConnection::adminPortProperty)
-    val applicationBaseUrl = objectBinding(protocol, host, applicationPort) {
-        URI("${protocol.value}://${host.value}:${applicationPort.value}")
-    }
-    val adminBaseUrl = objectBinding(protocol, host, adminPort) {
-        URI("${protocol.value}://${host.value}:${adminPort.value}")
+    fun startListeningForConnectionPreferences() {
+        easyModeConnectionModel.connectionPreferencesProperty.addListener(onConnectionPreferencesChanged)
+        customConnectionModel.connectionPreferencesProperty.addListener(onConnectionPreferencesChanged)
     }
 
-    fun updateFromUris(appUri: URI, adminUri: URI) {
-        protocol.value = appUri.scheme
-        host.value = appUri.host
-        applicationPort.value = appUri.port
-        adminPort.value = adminUri.port
+    fun stopListeningForConnectionPreferences() {
+        easyModeConnectionModel.connectionPreferencesProperty.removeListener(onConnectionPreferencesChanged)
+        customConnectionModel.connectionPreferencesProperty.removeListener(onConnectionPreferencesChanged)
+    }
+
+    val onConnectionPreferencesChanged = ChangeListener<ConnectionPreferences> { observable, oldValue, newValue ->
+        connectionPreferencesModel.item = newValue
     }
 }
