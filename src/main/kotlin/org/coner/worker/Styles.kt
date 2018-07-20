@@ -7,7 +7,6 @@ class WorkerStylesheet : Stylesheet() {
 
     companion object {
         val h1 by cssclass("h1")
-        val default by csspseudoclass("default")
     }
 
     init {
