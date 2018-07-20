@@ -3,20 +3,17 @@ package org.coner.worker.screen.establish_connection
 import javafx.beans.property.SimpleObjectProperty
 import javafx.concurrent.Task
 import javafx.geometry.Pos
+import javafx.util.StringConverter
 import org.coner.worker.ConnectionPreferences
 import org.coner.worker.controller.EasyModeController
-import org.coner.worker.controller.MavenController
 import tornadofx.*
 
 class EasyModeConnectionController : Controller() {
     val model by inject<EasyModeConnectionModel>()
-    val maven by inject<MavenController>()
     val easyMode: EasyModeController by inject()
 
-
     fun useEasyMode() {
-        easyMode.start()
-        easyMode.checkHealth()
+        easyMode.start(model.startStepProperty)
     }
 
     fun onUseEasyModeSuccess() {
@@ -39,6 +36,8 @@ class EasyModeConnectionModel : ViewModel() {
     val connectionPreferencesProperty = SimpleObjectProperty<ConnectionPreferences>()
     var connectionPreferences by connectionPreferencesProperty
 
+    val startStepProperty = SimpleObjectProperty<EasyModeController.StartStep>()
+    var startStep by startStepProperty
 }
 
 class EasyModeConnectionView : View() {
@@ -75,6 +74,9 @@ class EasyModeConnectionView : View() {
             label(messages["use_easy_mode_progress_text"]) {
                 isWrapText = true
             }
+            label(model.startStepProperty, converter = StartStepStringConverter()) {
+                isWrapText = true
+            }
             visibleWhen { model.useEasyModeTaskProperty.isNotNull }
         }
 
@@ -101,5 +103,21 @@ class EasyModeConnectionView : View() {
                 prefHeightProperty().bind(this@dialog.heightProperty())
             }
         }
+    }
+
+    inner class StartStepStringConverter : StringConverter<EasyModeController.StartStep>() {
+        override fun toString(startStep: EasyModeController.StartStep?): String {
+            return when (startStep) {
+                EasyModeController.StartStep.RESOLVE -> messages["use_easy_mode_progress_step_resolve"]
+                EasyModeController.StartStep.START -> messages["use_easy_mode_progress_step_start"]
+                EasyModeController.StartStep.HEALTH_CHECK -> messages["use_easy_mode_progress_step_health_check"]
+                else -> ""
+            }
+        }
+
+        override fun fromString(string: String?): EasyModeController.StartStep {
+            throw UnsupportedOperationException()
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 package org.coner.worker.controller
 
+import com.google.common.base.Preconditions
 import org.coner.worker.exception.EasyModeException
 import org.coner.worker.model.ConerCoreProcessModel
 import org.coner.worker.model.MavenModel
@@ -19,10 +20,16 @@ class ConerCoreProcessController : Controller() {
         adminApi.baseURI = "http://localhost:8081"
     }
 
-    fun start() {
+    fun resolve() {
         val result = maven.resolve(MavenModel.ArtifactKey.ConerCoreService)
         model.jarFile = result.artifact.file.absolutePath
         model.configFile = "it/config/coner-core-service.yml" // TODO: unpack from compiled resource
+    }
+
+    fun start() {
+        Preconditions.checkNotNull(model.jarFile, "jarFile not resolved")
+        Preconditions.checkNotNull(model.configFile, "configFile not resovled")
+
         process.configure(ConerCoreProcess.Settings(model.jarFile, model.configFile))
         process.start()
     }
