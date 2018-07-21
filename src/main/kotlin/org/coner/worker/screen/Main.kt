@@ -34,9 +34,9 @@ class MainView : View() {
                         alignment = Pos.CENTER_RIGHT
                         effect = DropShadow().apply {
                             color = Color.BLACK
-                            offsetX = 3.0
-                            offsetY = -3.0
-                            radius = 3.0
+                            offsetX = 2.0
+                            offsetY = -2.0
+                            radius = 4.0
                         }
                     }
                 }
