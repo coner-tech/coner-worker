@@ -9,7 +9,8 @@ import org.coner.worker.controller.EasyModeController
 import tornadofx.*
 
 class EasyModeConnectionController : Controller() {
-    val model by inject<EasyModeConnectionModel>()
+    val model: EasyModeConnectionModel by inject()
+    val view: EasyModeConnectionView by inject()
     val easyMode: EasyModeController by inject()
 
     fun useEasyMode() {
@@ -17,15 +18,13 @@ class EasyModeConnectionController : Controller() {
     }
 
     fun onUseEasyModeSuccess() {
-        model.useEasyModeTask = null
         model.connectionPreferences = easyMode.buildConnectionPreferences()
         model.commit()
     }
 
     fun onUseEasyModeFail(throwable: Throwable) {
         easyMode.stop()
-        model.useEasyModeTask = null
-        find<EasyModeConnectionView>().showUseEasyModeError(throwable)
+        view.showUseEasyModeError(throwable)
     }
 }
 
@@ -58,8 +57,10 @@ class EasyModeConnectionView : View() {
                     model.useEasyModeTask = runAsync {
                         controller.useEasyMode()
                     } success {
+                        model.useEasyModeTask = null
                         controller.onUseEasyModeSuccess()
                     } fail {
+                        model.useEasyModeTask = null
                         controller.onUseEasyModeFail(it)
                     }
                 }
