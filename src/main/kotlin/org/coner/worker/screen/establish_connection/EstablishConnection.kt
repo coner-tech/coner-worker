@@ -4,7 +4,6 @@ import javafx.scene.control.TabPane
 import javafx.scene.layout.Priority
 import org.coner.worker.ConnectionPreferences
 import org.coner.worker.ConnectionPreferencesModel
-import org.coner.worker.WorkerStylesheet
 import tornadofx.*
 
 class EstablishConnectionView : View() {
@@ -13,10 +12,6 @@ class EstablishConnectionView : View() {
 
     override val root = vbox {
         id = "establish_connection"
-        label(titleProperty) {
-            id = "title"
-            addClass(WorkerStylesheet.h1)
-        }
         tabpane {
             id = "tabs"
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE

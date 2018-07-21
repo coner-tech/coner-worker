@@ -1,11 +1,16 @@
 package org.coner.worker.screen
 
-import javafx.scene.Node
+import javafx.geometry.Pos
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
+import javafx.scene.effect.DropShadow
+import javafx.scene.layout.Priority
+import javafx.scene.paint.Color
+import javafx.scene.shape.StrokeType
 import javafx.stage.WindowEvent
 import org.coner.worker.ConerLogoPalette
 import org.coner.worker.ConnectionPreferencesController
+import org.coner.worker.WorkerStylesheet
 import org.coner.worker.controller.EasyModeController
 import org.coner.worker.screen.establish_connection.EstablishConnectionView
 import tornadofx.*
@@ -13,18 +18,35 @@ import tornadofx.*
 class MainView : View() {
 
     val controller: MainController by inject()
-    lateinit var center: Node
 
     override val root = borderpane {
         top {
             hbox {
-                style {
-                    background = ConerLogoPalette.DARK_GRAY.asBackground()
+                background = ConerLogoPalette.DARK_GRAY.asBackground()
+                padding = insets(8.0)
+                stackpane {
+                    text(find<MainCenterView>().titleProperty) {
+                        addClass(WorkerStylesheet.h1)
+                        fill = ConerLogoPalette.ORANGE
+                        stroke = Color.BLACK
+                        strokeWidth = 0.75
+                        strokeType = StrokeType.OUTSIDE
+                        alignment = Pos.CENTER_RIGHT
+                        effect = DropShadow().apply {
+                            color = Color.BLACK
+                            offsetX = 3.0
+                            offsetY = -3.0
+                            radius = 3.0
+                        }
+                    }
                 }
-                add(LogoView::class)
+                pane {
+                    hgrow = Priority.ALWAYS
+                }
+                add<LogoView>()
             }
         }
-        center(MainCenterView::class)
+        center<MainCenterView>()
     }
 
     init {
@@ -45,7 +67,16 @@ class MainView : View() {
 }
 
 class MainCenterView : View() {
-    override val root = pane { }
+
+    override val root = stackpane { }
+
+    init {
+        root.children.onChange { change ->
+            val uiComponent = root.children.first().uiComponent<UIComponent>()!!
+            titleProperty.bind(uiComponent.titleProperty)
+        }
+    }
+
 }
 
 class MainController : Controller() {
@@ -55,7 +86,7 @@ class MainController : Controller() {
 
     fun onViewInit() {
         if (!connectionPreferencesController.model.item.saved) {
-            find(MainCenterView::class).replaceChildren { replaceWith(EstablishConnectionView::class) }
+            find<MainCenterView>().root.replaceChildren(find<EstablishConnectionView>())
         } else {
             TODO("handle launch with config defined")
         }

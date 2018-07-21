@@ -19,7 +19,7 @@ class WorkerStylesheet : Stylesheet() {
             fontSmoothingType = FontSmoothingType.GRAY
         }
         h1 {
-            fontSize = 18.pt
+            fontSize = 24.pt
             fontWeight = FontWeight.BOLD
             padding = box(0.px, 8.px)
         }
