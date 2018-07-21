@@ -19,8 +19,8 @@ class WorkerApp : App(MainView::class, WorkerStylesheet::class) {
                 listOf(16, 32, 48, 64, 128, 256, 512, 1024)
                         .map { Image("/coner-icon/coner-icon_$it.png") }
         )
-        FX.primaryStage.minWidth = 512.0
-        FX.primaryStage.minHeight = 512.0
+        FX.primaryStage.minWidth = 800.0
+        FX.primaryStage.minHeight = 600.0
 
         stage.setOnCloseRequest(find<MainController>()::onCloseRequest)
     }
