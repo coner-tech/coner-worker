@@ -15,12 +15,12 @@ class WorkerApp : App(MainView::class, WorkerStylesheet::class) {
 
     override fun start(stage: Stage) {
         super.start(stage)
-        FX.primaryStage.icons.addAll(
+        stage.icons.addAll(
                 listOf(16, 32, 48, 64, 128, 256, 512, 1024)
                         .map { Image("/coner-icon/coner-icon_$it.png") }
         )
-        FX.primaryStage.minWidth = 800.0
-        FX.primaryStage.minHeight = 600.0
+        stage.width = 640.0
+        stage.height = 480.0
 
         stage.setOnCloseRequest(find<MainController>()::onCloseRequest)
     }
