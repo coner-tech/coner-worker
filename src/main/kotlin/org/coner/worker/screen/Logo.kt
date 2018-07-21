@@ -5,7 +5,7 @@ import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
 import javafx.scene.text.TextAlignment
-import org.coner.worker.ConerPalette
+import org.coner.worker.ConerLogoPalette
 import tornadofx.*
 
 class LogoView : View() {
@@ -22,7 +22,7 @@ class LogoView : View() {
                 id = "title_short"
                 textAlignment = TextAlignment.CENTER
                 font = Font.font("sans-serif", FontWeight.EXTRA_BOLD, 18.0)
-                fill = ConerPalette.LOGO_ORANGE
+                fill = ConerLogoPalette.ORANGE
                 stroke = Color.BLACK
                 strokeWidth = 0.75
                 alignment = Pos.CENTER

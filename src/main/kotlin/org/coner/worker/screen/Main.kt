@@ -4,7 +4,7 @@ import javafx.scene.Node
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
 import javafx.stage.WindowEvent
-import org.coner.worker.ConerPalette
+import org.coner.worker.ConerLogoPalette
 import org.coner.worker.ConnectionPreferencesController
 import org.coner.worker.controller.EasyModeController
 import org.coner.worker.screen.establish_connection.EstablishConnectionView
@@ -19,7 +19,7 @@ class MainView : View() {
         top {
             hbox {
                 style {
-                    background = ConerPalette.LOGO_DARK_GRAY.asBackground()
+                    background = ConerLogoPalette.DARK_GRAY.asBackground()
                 }
                 add(LogoView::class)
             }
