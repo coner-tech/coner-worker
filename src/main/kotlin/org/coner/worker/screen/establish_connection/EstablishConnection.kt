@@ -1,5 +1,6 @@
 package org.coner.worker.screen.establish_connection
 
+import javafx.geometry.Rectangle2D
 import javafx.scene.control.TabPane
 import javafx.scene.layout.Priority
 import org.coner.worker.ConnectionPreferences
@@ -10,17 +11,28 @@ class EstablishConnectionView : View() {
 
     val controller: EstablishConnectionController by inject()
 
-    override val root = vbox {
+    override val root = stackpane {
         id = "establish_connection"
-        tabpane {
-            id = "tabs"
-            tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-            vgrow = Priority.ALWAYS
-            tab(find<EasyModeConnectionView>()) {
-                id = "easy-mode-tab"
-            }
-            tab(find(CustomConnectionView::class)) {
-                id = "custom-connection-tab"
+        imageview(resources.image("/coner-icon/coner-icon_3840.png")) {
+            val heightFactor = 0.645
+            fitWidthProperty().bind(primaryStage.widthProperty())
+            fitHeightProperty().bind(primaryStage.widthProperty().times(heightFactor))
+            viewport = Rectangle2D(804.0, 828.0, 2188.0, 1412.0)
+            isPreserveRatio = true
+            opacity = 0.1
+            isSmooth = true
+        }
+        vbox {
+            tabpane {
+                id = "tabs"
+                tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+                vgrow = Priority.ALWAYS
+                tab(find<EasyModeConnectionView>()) {
+                    id = "easy-mode-tab"
+                }
+                tab(find(CustomConnectionView::class)) {
+                    id = "custom-connection-tab"
+                }
             }
         }
     }
