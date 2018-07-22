@@ -18,7 +18,7 @@ class ConerCoreProcess @Inject constructor(private val processBuilder: ProcessBu
     fun configure(settings: Settings) {
         Preconditions.checkState(!started || process == null, "Can't change settings after starting process")
         processBuilder.command(
-                "java", "-jar", settings.pathToJar, "server", settings.pathToConfig
+                "${System.getProperty("java.home")}/bin/java", "-jar", settings.pathToJar, "server", settings.pathToConfig
         )
     }
 
