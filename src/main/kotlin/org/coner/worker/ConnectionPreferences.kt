@@ -3,6 +3,8 @@ package org.coner.worker
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
+import org.apache.commons.lang3.builder.EqualsBuilder
+import org.apache.commons.lang3.builder.HashCodeBuilder
 import tornadofx.*
 
 class ConnectionPreferencesController : Controller() {
@@ -73,6 +75,17 @@ class ConnectionPreferences(
     }
 
     internal val properties = arrayOf(savedProperty, modeProperty, conerCoreServiceUrlProperty, conerCoreAdminUrlProperty)
+    internal val propertiesNames = properties.map { "${it.name}Property" }
+
+    override fun equals(other: Any?): Boolean {
+        return EqualsBuilder.reflectionEquals(this, other, propertiesNames)
+    }
+
+    override fun hashCode(): Int {
+        return HashCodeBuilder.reflectionHashCode(this, propertiesNames)
+    }
+
+
 }
 
 class ConnectionPreferencesModel : ItemViewModel<ConnectionPreferences>() {
