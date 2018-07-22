@@ -44,14 +44,14 @@ class EasyModeConnectionView : View() {
     val controller by inject<EasyModeConnectionController>()
 
     override val root = stackpane {
-        id = "easy_mode"
+        id = "easy_mode_connection"
         useMaxSize = true
         padding = insets(8)
         vbox(spacing = 8) {
-            id = "easy_mode_wrapper"
+            id = "use_wrapper"
             alignment = Pos.CENTER
             button(messages["use_easy_mode"]) {
-                id = "use_easy_mode"
+                id = "button"
                 isDefaultButton = true
                 action {
                     model.useEasyModeTask = runAsync {
@@ -69,18 +69,21 @@ class EasyModeConnectionView : View() {
         }
 
         vbox(spacing = 8) {
-            id = "easy_mode_progress"
+            id = "progress_wrapper"
             alignment = Pos.CENTER
-            progressindicator()
+            progressindicator() {
+                id = "indicator"
+            }
             label(messages["use_easy_mode_progress_text"]) {
+                id = "label"
                 isWrapText = true
             }
             label(model.startStepProperty, converter = StartStepStringConverter()) {
+                id = "start_step"
                 isWrapText = true
             }
             visibleWhen { model.useEasyModeTaskProperty.isNotNull }
         }
-
     }
 
     init {
