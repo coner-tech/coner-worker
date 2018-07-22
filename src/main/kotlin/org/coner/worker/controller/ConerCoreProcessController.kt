@@ -6,6 +6,7 @@ import org.coner.worker.model.ConerCoreProcessModel
 import org.coner.worker.model.MavenModel
 import org.coner.worker.process.ConerCoreProcess
 import tornadofx.*
+import java.io.File
 
 class ConerCoreProcessController : Controller() {
 
@@ -17,13 +18,13 @@ class ConerCoreProcessController : Controller() {
 
 
     init {
-        adminApi.baseURI = "http://localhost:8081"
+        adminApi.baseURI = model.adminUrl.toString()
     }
 
     fun resolve() {
         val result = maven.resolve(MavenModel.ArtifactKey.ConerCoreService)
         model.jarFile = result.artifact.file.absolutePath
-        model.configFile = "it/config/coner-core-service.yml" // TODO: unpack from compiled resource
+        model.configFile = buildConfigFile().absolutePath
     }
 
     fun start() {
@@ -47,6 +48,24 @@ class ConerCoreProcessController : Controller() {
         } finally {
             response.consume()
         }
+    }
+
+    fun buildConfigFile(): File {
+        val configFileFolder = app.configBasePath.resolve("easy-mode").toFile()
+        if (!configFileFolder.exists()) configFileFolder.mkdirs()
+        val configFileName = "coner-core-service.yml"
+        val configFile = File(configFileFolder, configFileName)
+
+        val databaseUrlFileName = "coner-core-service.db"
+        val databaseUrlFile = File(configFileFolder, databaseUrlFileName)
+
+        var out = resources.text("/easy-mode/$configFileName.template")
+        out = out.replace("{{server.applicationConnectors[0].port}}", "${model.serviceUrl.port}")
+        out = out.replace("{{server.adminConnectors[0].port}}", "${model.adminUrl.port}")
+        out = out.replace("{{database.url.file}}", databaseUrlFile.absolutePath)
+        configFile.writeText(out)
+
+        return configFile
     }
 }
 

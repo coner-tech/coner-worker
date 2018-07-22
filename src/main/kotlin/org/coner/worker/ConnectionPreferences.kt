@@ -2,10 +2,10 @@ package org.coner.worker
 
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.property.SimpleStringProperty
 import org.apache.commons.lang3.builder.EqualsBuilder
 import org.apache.commons.lang3.builder.HashCodeBuilder
 import tornadofx.*
+import java.net.URI
 
 class ConnectionPreferencesController : Controller() {
 
@@ -32,8 +32,8 @@ private fun ConfigProperties.loadConnectionPreferences(): ConnectionPreferences 
     return ConnectionPreferences().apply {
         boolean(savedProperty.name)?.let { saved = it }
         string(modeProperty.name)?.let { mode = ConnectionPreferences.Mode.valueOf(it) }
-        string(conerCoreServiceUrlProperty.name)?.let { conerCoreServiceUrl = it }
-        string(conerCoreAdminUrlProperty.name)?.let { conerCoreAdminUrl = it }
+        string(conerCoreServiceUrlProperty.name)?.let { conerCoreServiceUrl = URI(it) }
+        string(conerCoreAdminUrlProperty.name)?.let { conerCoreAdminUrl = URI(it) }
     }
 }
 
@@ -52,8 +52,8 @@ class ConnectionPreferences(
     constructor(
             saved: Boolean,
             mode: Mode,
-            conerCoreServiceUrl: String,
-            conerCoreAdminUrl: String
+            conerCoreServiceUrl: URI,
+            conerCoreAdminUrl: URI
     ) : this() {
         this.saved = saved
         this.mode = mode
@@ -64,9 +64,9 @@ class ConnectionPreferences(
     var saved by savedProperty
     val modeProperty = SimpleObjectProperty<Mode?>(this, "mode")
     var mode by modeProperty
-    val conerCoreServiceUrlProperty = SimpleStringProperty(this, "conerCoreServiceUrl")
+    val conerCoreServiceUrlProperty = SimpleObjectProperty<URI>(this, "conerCoreServiceUrl")
     var conerCoreServiceUrl by conerCoreServiceUrlProperty
-    val conerCoreAdminUrlProperty = SimpleStringProperty(this, "conerCoreAdminUrl")
+    val conerCoreAdminUrlProperty = SimpleObjectProperty<URI>(this, "conerCoreAdminUrl")
     var conerCoreAdminUrl by conerCoreAdminUrlProperty
 
     enum class Mode {

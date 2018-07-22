@@ -46,8 +46,8 @@ class CustomConnectionController : Controller() {
         model.connectionPreferences = ConnectionPreferences(
             saved = false,
             mode = ConnectionPreferences.Mode.CUSTOM,
-            conerCoreServiceUrl = spec.applicationUri.toString(),
-            conerCoreAdminUrl = spec.adminUri.toString()
+            conerCoreServiceUrl = spec.applicationUri,
+            conerCoreAdminUrl = spec.adminUri
         )
     }
 
