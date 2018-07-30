@@ -6,6 +6,6 @@ import org.coner.worker.process.ConerCoreProcess
 
 class MockkProcessModule : KotlinModule() {
     override fun configure() {
-        bind<ConerCoreProcess>().toInstance(mockk())
+        bind<ConerCoreProcess>().toInstance(mockk(relaxed = true))
     }
 }
