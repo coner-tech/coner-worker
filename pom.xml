@@ -9,6 +9,7 @@
 
     <properties>
         <kotlin.version>1.2.51</kotlin.version>
+        <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <tornadofx.version>1.7.16</tornadofx.version>
         <apache-commons-lang3.version>3.7</apache-commons-lang3.version>
         <apache-commons-io.version>2.6</apache-commons-io.version>
