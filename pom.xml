@@ -294,7 +294,8 @@
             <id>ci</id>
             <activation>
                 <property>
-                    <name>CI</name>
+                    <name>ci</name>
+                    <value>true</value>
                 </property>
             </activation>
             <build>
