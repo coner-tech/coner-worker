@@ -295,7 +295,6 @@
             <activation>
                 <property>
                     <name>CI</name>
-                    <value>true</value>
                 </property>
             </activation>
             <build>
