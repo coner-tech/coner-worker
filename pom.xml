@@ -21,7 +21,7 @@
         <testfx.version>4.0.12-alpha</testfx.version>
         <mockk.version>1.8.5</mockk.version>
         <jsonassert.version>1.5.0</jsonassert.version>
-        <coner-core.version>0.1.25-SNAPSHOT</coner-core.version>
+        <coner-core.version>0.1.25</coner-core.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <guice.version>4.2.0</guice.version>
         <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
