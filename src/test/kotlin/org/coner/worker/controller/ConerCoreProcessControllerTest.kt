@@ -1,12 +1,17 @@
 package org.coner.worker.controller
 
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown
 import org.coner.worker.di.GuiceDiContainer
 import org.coner.worker.di.MockkProcessModule
+import org.coner.worker.exception.EasyModeException
 import org.coner.worker.model.ConerCoreProcessModel
+import org.coner.worker.model.MavenModel
 import org.coner.worker.process.ConerCoreProcess
+import org.eclipse.aether.resolution.ArtifactResult
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -36,15 +41,15 @@ class ConerCoreProcessControllerTest {
             set(mockk<MavenController>(relaxed = true, name = "maven"))
             set(mockk<ConerCoreAdminApi>(relaxed = true, name = "adminApi"))
         }
-        val diContainer = GuiceDiContainer(MockkProcessModule())
-        FX.dicontainer = diContainer
+        val di = GuiceDiContainer(MockkProcessModule())
+        FX.dicontainer = di
         FxToolkit.registerPrimaryStage()
         FxToolkit.setupApplication { app }
 
         controller = find()
 
         model = find()
-        process = diContainer.getInstance()
+        process = di.getInstance()
         maven = find()
         adminApi = find()
     }
@@ -59,6 +64,61 @@ class ConerCoreProcessControllerTest {
     @Test
     fun whenInitItShouldAssignDefaultAdminApiBaseUri() {
         verify { adminApi.baseURI = "http://localhost:8081" }
+    }
+
+    @Test
+    fun itShouldResolve() {
+        val result: ArtifactResult = mockk()
+        val conerCoreArtifactFile = folder.newFile("coner-core-service-someversion.jar")
+        every { maven.resolve(MavenModel.ArtifactKey.ConerCoreService) }.returns(result)
+        every { result.artifact.file }.returns(conerCoreArtifactFile)
+
+        controller.resolve()
+
+        verify { maven.resolve(MavenModel.ArtifactKey.ConerCoreService) }
+        assertThat(model.jarFile)
+                .isNotNull()
+                .isSameAs(conerCoreArtifactFile.absolutePath)
+        assertThat(model.configFile)
+                .isNotNull()
+                .startsWith(folder.root.absolutePath)
+                .endsWith("coner-core-service.yml")
+    }
+
+    @Test
+    fun itShouldCheckHealthWhenHealthy() {
+        val response: Rest.Response = mockk(relaxed = true)
+        every { adminApi.get("/healthcheck" )}.returns(response)
+        every { response.ok() }.returns(true)
+
+        controller.checkHealth()
+
+        verify { response.ok() }
+        verify { response.consume() }
+    }
+
+    @Test
+    fun itShouldCheckHealthWhenUnhealthy() {
+        val response: Rest.Response = mockk(relaxed = true)
+        every { adminApi.get("/healthcheck" )}.returns(response)
+        every { response.ok() }.returns(false)
+        val responseStatus = Rest.Response.Status.InternalServerError
+        every { response.status }.returns(responseStatus)
+        val responseReason = "Oops something went wrong"
+        every { response.reason }.returns(responseReason)
+
+        try {
+            controller.checkHealth()
+            failBecauseExceptionWasNotThrown(EasyModeException::class.java)
+        } catch (t: Throwable) {
+            assertThat(t)
+                    .isInstanceOf(EasyModeException::class.java)
+                    .hasMessageContaining(responseStatus.toString())
+                    .hasMessageContaining(responseReason)
+        } finally {
+            verify { response.ok() }
+        }
+
     }
 
     @Test
@@ -104,5 +164,5 @@ class ConerCoreProcessControllerTest {
 
         verify { process.stop() }
     }
-    
+
 }
