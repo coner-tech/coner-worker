@@ -1,4 +1,4 @@
-package org.coner.worker
+package org.coner.worker.di
 
 import com.google.inject.AbstractModule
 import com.google.inject.Provides
@@ -13,3 +13,4 @@ class AppModule : AbstractModule() {
     fun processBuilder() = ProcessBuilder()
 
 }
+
