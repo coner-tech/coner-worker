@@ -1,21 +1,38 @@
 package org.coner.worker
 
+import com.google.inject.Guice
 import javafx.application.Application
 import javafx.scene.image.Image
 import javafx.stage.Stage
-import org.coner.worker.page.MainView
+import org.coner.worker.di.AetherModule
+import org.coner.worker.di.AppModule
+import org.coner.worker.screen.MainController
+import org.coner.worker.screen.MainView
 import tornadofx.*
+import kotlin.reflect.KClass
 
-class WorkerApp: App(MainView::class, WorkerStylesheet::class) {
+class WorkerApp : App(MainView::class, WorkerStylesheet::class) {
+
+    val guice = Guice.createInjector(AppModule(), AetherModule())
 
     override fun start(stage: Stage) {
         super.start(stage)
-        FX.primaryStage.icons.addAll(
+        stage.icons.addAll(
                 listOf(16, 32, 48, 64, 128, 256, 512, 1024)
                         .map { Image("/coner-icon/coner-icon_$it.png") }
         )
-        FX.primaryStage.minWidth = 512.0
-        FX.primaryStage.minHeight = 512.0
+        stage.width = 640.0
+        stage.height = 480.0
+
+        stage.setOnCloseRequest(find<MainController>()::onCloseRequest)
+    }
+
+    init {
+        FX.dicontainer = object : DIContainer {
+            override fun <T : Any> getInstance(type: KClass<T>): T {
+                return guice.getInstance(type.java)
+            }
+        }
     }
 }
 

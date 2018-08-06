@@ -1,8 +1,8 @@
-package org.coner.worker.view
+package org.coner.worker.screen
 
 import javafx.scene.Scene
 import javafx.stage.Stage
-import org.coner.worker.page.LogoView
+import org.coner.worker.screen.LogoView
 import org.junit.Test
 import org.testfx.api.FxAssert.verifyThat
 import org.testfx.api.FxToolkit

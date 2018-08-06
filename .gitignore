@@ -1,3 +1,7 @@
+# Rules specific to coner-worker
+conf/
+it/environment/
+
 # https://github.com/github/gitignore/blob/master/Java.gitignore
 # Compiled class file
 *.class
@@ -22,7 +26,7 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-# https://github.com/github/gitignore/blob/master/Maven.gitignore 
+# https://github.com/github/gitignore/blob/master/Maven.gitignore
 target/
 pom.xml.tag
 pom.xml.releaseBackup
