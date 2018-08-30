@@ -1,16 +1,20 @@
 package org.coner.worker.widget
 
 import javafx.geometry.Pos
+import javafx.scene.layout.StackPane
 import javafx.scene.text.FontWeight
+import javafx.scene.text.Text
 import javafx.stage.Stage
+import org.coner.worker.page.ListMenuNavigationPanePage
+import org.testfx.api.FxRobot
 import tornadofx.*
 
 class ListMenuNavigationPaneApp : App(ListMenuNavigationPaneAppMainView::class) {
     override fun start(stage: Stage) {
         super.start(stage)
-        stage.minWidth = 320.0
-        stage.minHeight = 240.0
-        stage.height = 240.0
+        stage.minWidth = 800.0
+        stage.minHeight = 600.0
+        stage.height = 600.0
     }
 }
 
@@ -18,11 +22,13 @@ class ListMenuNavigationPaneAppMainView : View("Navigation Pane App") {
 
     override val root = find<ListMenuNavigationPaneFragment>(
             ListMenuNavigationPaneFragment::items to (0..9)
-                    .map { ListMenuItem(text = it.toString()) }.toTypedArray(),
+                    .map { ListMenuItem(text = it.toString()) },
             ListMenuNavigationPaneFragment::contentLocator to this::findNumberDisplayFragment
-    ).root
+    ).root.apply {
+        id = "list-menu-navigation-pane-app-main-view"
+    }
 
-    private fun findNumberDisplayFragment(item: ListMenuItem): UIComponent {
+    fun findNumberDisplayFragment(item: ListMenuItem): UIComponent {
         return find<NumberDisplayFragment>(
                 NumberDisplayFragment::digit to item.text!!.toInt()
         )
@@ -35,8 +41,10 @@ class NumberDisplayFragment : Fragment() {
     val text = converter.convert(digit)
 
     override val root = stackpane {
+        addClass("number-display-fragment")
         alignment = Pos.CENTER
         text(text) {
+            id = "text"
             style {
                 fontSize = 48.0.pt
                 fontWeight = FontWeight.BOLD
@@ -72,4 +80,13 @@ class NumberDisplayConverter : Controller() {
         else -> throw IllegalStateException("Only support range 0 .. 9")
     }
 
+}
+
+class ListMenuNavigationPaneAppMainPage(
+        val listMenuNavigationPane: ListMenuNavigationPanePage,
+        val robot: FxRobot = listMenuNavigationPane.robot
+) {
+    val nav = (0 .. 9).map { listMenuNavigationPane.listItem(it) as ListMenuItem }.toTypedArray()
+    fun numberDisplayRoot(): StackPane = robot.from(listMenuNavigationPane.contentPane).lookup(".number-display-fragment").query()
+    fun numberDisplayText(): Text = robot.from(numberDisplayRoot()).lookup("#text").query()
 }

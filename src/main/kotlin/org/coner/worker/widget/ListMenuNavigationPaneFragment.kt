@@ -13,7 +13,7 @@ class ListMenuNavigationPaneFragment : Fragment() {
     private lateinit var contentPane: Pane
     private lateinit var selected: Parent
     private lateinit var listMenu: ListMenu
-    val items: Array<ListMenuItem> by param()
+    val items: List<ListMenuItem> by param()
     val contentLocator: (item: ListMenuItem) -> UIComponent by param()
 
     override val root = hbox {
@@ -30,7 +30,9 @@ class ListMenuNavigationPaneFragment : Fragment() {
         stackpane {
             contentPane = this
             hgrow = Priority.ALWAYS
+            addClass("content-pane")
         }
+        addClass("list-menu-navigation-pane")
     }
 
     override fun onDock() {
