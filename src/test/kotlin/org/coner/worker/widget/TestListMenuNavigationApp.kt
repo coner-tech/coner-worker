@@ -20,11 +20,13 @@ class TestListMenuNavigationApp : App(TestListMenuNavigationMainView::class) {
 
 class TestListMenuNavigationMainView : View("Test ListMenu Navigation App") {
 
-    override val root = find<ListMenuNavigationFragment>(
+    private val rootFragmentArgs = mapOf(
             ListMenuNavigationFragment::items to (0..9)
                     .map { ListMenuItem(text = it.toString()) },
             ListMenuNavigationFragment::contentLocator to this::findNumberDisplayFragment
-    ).root.apply {
+    )
+
+    override val root = find<ListMenuNavigationFragment>(rootFragmentArgs).root.apply {
         id = "list-menu-navigation-main-view"
     }
 
