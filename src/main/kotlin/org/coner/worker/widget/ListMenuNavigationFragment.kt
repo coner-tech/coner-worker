@@ -23,7 +23,7 @@ class ListMenuNavigationFragment : Fragment() {
             listmenu(orientation = Orientation.VERTICAL) {
                 listMenu = this
                 this@ListMenuNavigationFragment.items.forEach {
-                    item(it.text, it.graphic, it.tag)
+                    it.attachTo(this)
                 }
             }
         }
