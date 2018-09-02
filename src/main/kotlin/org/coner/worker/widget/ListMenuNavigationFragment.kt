@@ -21,6 +21,11 @@ class ListMenuNavigationFragment : Fragment() {
             vbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
             listmenu(orientation = Orientation.VERTICAL) {
                 listMenu = this
+                this@scrollpane.minWidthProperty().bind(
+                        this.widthProperty()
+                                .plus(this@scrollpane.paddingLeftProperty)
+                                .plus(this@scrollpane.paddingRightProperty)
+                )
                 for (i in adapter.range) {
                     val uiComponent = adapter.locate(i)
                     item {

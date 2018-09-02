@@ -44,10 +44,10 @@ class CustomConnectionController : Controller() {
 
     fun onConnectSuccess(spec: AttemptCustomConerCoreConnection) {
         model.connectionPreferences = ConnectionPreferences(
-            saved = false,
-            mode = ConnectionPreferences.Mode.CUSTOM,
-            conerCoreServiceUrl = spec.applicationUri,
-            conerCoreAdminUrl = spec.adminUri
+                saved = false,
+                mode = ConnectionPreferences.Mode.CUSTOM,
+                conerCoreServiceUrl = spec.applicationUri,
+                conerCoreAdminUrl = spec.adminUri
         )
     }
 
@@ -97,7 +97,6 @@ class CustomConnectionView : View() {
 
     override val root = form {
         id = "custom_connection"
-        hgrow = Priority.ALWAYS
         vgrow = Priority.ALWAYS
         fieldset("Coner Core", labelPosition = Orientation.VERTICAL) {
             id = "coner_core"
