@@ -1,6 +1,6 @@
 package org.coner.worker.widget
 
-import org.coner.worker.page.ListMenuNavigationPanePage
+import org.coner.worker.page.ListMenuNavigationPage
 import org.coner.worker.util.javafx.scene.control.scrollToChild
 import org.junit.After
 import org.junit.Before
@@ -10,25 +10,25 @@ import org.testfx.api.FxToolkit
 import org.testfx.assertions.api.Assertions
 import tornadofx.*
 
-class ListMenuNavigationPaneFragmentTest {
+class ListMenuNavigationFragmentTest {
 
-    lateinit var mainView: ListMenuNavigationPaneAppMainView
-    lateinit var fragment: ListMenuNavigationPaneFragment
+    lateinit var mainView: TestListMenuNavigationMainView
+    lateinit var fragment: ListMenuNavigationFragment
 
     lateinit var robot: FxRobot
-    lateinit var page: ListMenuNavigationPaneAppMainPage
+    lateinit var page: TestListMenuNavigationMainPage
 
     @Before
     fun before() {
         val stage = FxToolkit.registerPrimaryStage()
-        FxToolkit.setupApplication { ListMenuNavigationPaneApp() }
+        FxToolkit.setupApplication { TestListMenuNavigationApp() }
         mainView = stage.uiComponent()!!
         robot = FxRobot()
-        val listMenuNavigationPanePage = ListMenuNavigationPanePage(
+        val listMenuNavigationPanePage = ListMenuNavigationPage(
                 robot,
                 mainView.root
         )
-        page = ListMenuNavigationPaneAppMainPage(listMenuNavigationPanePage)
+        page = TestListMenuNavigationMainPage(listMenuNavigationPanePage)
     }
 
     @After
@@ -53,7 +53,7 @@ class ListMenuNavigationPaneFragmentTest {
 
     @Test
     fun itShouldSwitchToNine() {
-        page.listMenuNavigationPane.scrollPane.scrollToChild(page.nav[9])
+        page.listMenuNavigation.scrollPane.scrollToChild(page.nav[9])
         robot.clickOn(page.nav[9])
         Thread.sleep(500)
         Assertions.assertThat(page.numberDisplayText()).hasText("Nine")

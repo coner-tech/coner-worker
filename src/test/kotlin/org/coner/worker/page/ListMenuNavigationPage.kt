@@ -8,9 +8,9 @@ import org.coner.worker.util.testfx.lookupAndQuery
 import org.testfx.api.FxRobot
 import tornadofx.*
 
-class ListMenuNavigationPanePage(val robot: FxRobot, vararg val parentNodes: Node) {
+class ListMenuNavigationPage(val robot: FxRobot, vararg val parentNodes: Node) {
 
-    val root: Parent = robot.from(*parentNodes).lookupAndQuery(".list-menu-navigation-pane")
+    val root: Parent = robot.from(*parentNodes).lookupAndQuery(".list-menu-navigation-fragment")
     val scrollPane: ScrollPane = robot.from(root).lookupAndQuery(".scroll-pane")
     val listMenu: ListMenu = robot.from(scrollPane).lookupAndQuery(".list-menu")
     val contentPane: StackPane = robot.from(root).lookupAndQuery(".content-pane")

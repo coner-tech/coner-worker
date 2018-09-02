@@ -8,7 +8,7 @@ import javafx.scene.layout.Priority
 import javafx.util.Duration
 import tornadofx.*
 
-class ListMenuNavigationPaneFragment : Fragment() {
+class ListMenuNavigationFragment : Fragment() {
 
     private lateinit var contentPane: Pane
     private lateinit var selected: Parent
@@ -22,7 +22,7 @@ class ListMenuNavigationPaneFragment : Fragment() {
             vbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
             listmenu(orientation = Orientation.VERTICAL) {
                 listMenu = this
-                this@ListMenuNavigationPaneFragment.items.forEach {
+                this@ListMenuNavigationFragment.items.forEach {
                     item(it.text, it.graphic, it.tag)
                 }
             }
@@ -32,7 +32,7 @@ class ListMenuNavigationPaneFragment : Fragment() {
             hgrow = Priority.ALWAYS
             addClass("content-pane")
         }
-        addClass("list-menu-navigation-pane")
+        addClass("list-menu-navigation-fragment")
     }
 
     override fun onDock() {

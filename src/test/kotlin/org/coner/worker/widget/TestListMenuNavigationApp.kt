@@ -5,11 +5,11 @@ import javafx.scene.layout.StackPane
 import javafx.scene.text.FontWeight
 import javafx.scene.text.Text
 import javafx.stage.Stage
-import org.coner.worker.page.ListMenuNavigationPanePage
+import org.coner.worker.page.ListMenuNavigationPage
 import org.testfx.api.FxRobot
 import tornadofx.*
 
-class ListMenuNavigationPaneApp : App(ListMenuNavigationPaneAppMainView::class) {
+class TestListMenuNavigationApp : App(TestListMenuNavigationMainView::class) {
     override fun start(stage: Stage) {
         super.start(stage)
         stage.minWidth = 800.0
@@ -18,14 +18,14 @@ class ListMenuNavigationPaneApp : App(ListMenuNavigationPaneAppMainView::class) 
     }
 }
 
-class ListMenuNavigationPaneAppMainView : View("Navigation Pane App") {
+class TestListMenuNavigationMainView : View("Test ListMenu Navigation App") {
 
-    override val root = find<ListMenuNavigationPaneFragment>(
-            ListMenuNavigationPaneFragment::items to (0..9)
+    override val root = find<ListMenuNavigationFragment>(
+            ListMenuNavigationFragment::items to (0..9)
                     .map { ListMenuItem(text = it.toString()) },
-            ListMenuNavigationPaneFragment::contentLocator to this::findNumberDisplayFragment
+            ListMenuNavigationFragment::contentLocator to this::findNumberDisplayFragment
     ).root.apply {
-        id = "list-menu-navigation-pane-app-main-view"
+        id = "list-menu-navigation-main-view"
     }
 
     fun findNumberDisplayFragment(item: ListMenuItem): UIComponent {
@@ -82,11 +82,11 @@ class NumberDisplayConverter : Controller() {
 
 }
 
-class ListMenuNavigationPaneAppMainPage(
-        val listMenuNavigationPane: ListMenuNavigationPanePage,
-        val robot: FxRobot = listMenuNavigationPane.robot
+class TestListMenuNavigationMainPage(
+        val listMenuNavigation: ListMenuNavigationPage,
+        val robot: FxRobot = listMenuNavigation.robot
 ) {
-    val nav = (0 .. 9).map { listMenuNavigationPane.listItem(it) as ListMenuItem }.toTypedArray()
-    fun numberDisplayRoot(): StackPane = robot.from(listMenuNavigationPane.contentPane).lookup(".number-display-fragment").query()
+    val nav = (0..9).map { listMenuNavigation.listItem(it) as ListMenuItem }.toTypedArray()
+    fun numberDisplayRoot(): StackPane = robot.from(listMenuNavigation.contentPane).lookup(".number-display-fragment").query()
     fun numberDisplayText(): Text = robot.from(numberDisplayRoot()).lookup("#text").query()
 }
