@@ -13,8 +13,7 @@ class ListMenuNavigationFragment : Fragment() {
     private lateinit var contentPane: Pane
     private lateinit var selected: Parent
     private lateinit var listMenu: ListMenu
-    val items: List<ListMenuItem> by param()
-    val contentLocator: (item: ListMenuItem) -> UIComponent by param()
+    val adapter: Adapter by param()
 
     override val root = hbox {
         scrollpane(fitToWidth = true, fitToHeight = true) {
@@ -22,8 +21,11 @@ class ListMenuNavigationFragment : Fragment() {
             vbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
             listmenu(orientation = Orientation.VERTICAL) {
                 listMenu = this
-                this@ListMenuNavigationFragment.items.forEach {
-                    it.attachTo(this)
+                for (i in adapter.range) {
+                    val uiComponent = adapter.locate(i)
+                    item {
+                        textProperty.bind(uiComponent.titleProperty)
+                    }
                 }
             }
         }
@@ -48,9 +50,9 @@ class ListMenuNavigationFragment : Fragment() {
 
     private val activeItemChangedListener = ChangeListener<ListMenuItem?> { observable, oldValue, newValue ->
         if (oldValue == newValue) return@ChangeListener
-        val replacement = contentLocator(newValue!!)
         val oldIndex = listMenu.items.indexOf(oldValue)
         val newIndex = listMenu.items.indexOf(newValue)
+        val replacement = adapter.locate(newIndex)
         if (oldIndex >= 0) {
             val direction = if (newIndex > oldIndex) {
                 ViewTransition.Direction.UP
@@ -73,6 +75,15 @@ class ListMenuNavigationFragment : Fragment() {
                 contentPane.add(replacement)
                 selected = replacement.root
             }
+        }
+    }
+
+    data class Adapter(val count: Int, private val locator: (index: Int) -> UIComponent) {
+        val range = 0..(count - 1)
+
+        fun locate(index: Int): UIComponent {
+            check(range.contains(index)) { "$index out of range: $range" }
+            return locator(index)
         }
     }
 }

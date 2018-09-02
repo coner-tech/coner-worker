@@ -21,18 +21,19 @@ class TestListMenuNavigationApp : App(TestListMenuNavigationMainView::class) {
 class TestListMenuNavigationMainView : View("Test ListMenu Navigation App") {
 
     private val rootFragmentArgs = mapOf(
-            ListMenuNavigationFragment::items to (0..9)
-                    .map { ListMenuItem(text = it.toString()) },
-            ListMenuNavigationFragment::contentLocator to this::findNumberDisplayFragment
+            ListMenuNavigationFragment::adapter to ListMenuNavigationFragment.Adapter(
+                    count = 10,
+                    locator = this::findNumberDisplayFragment
+            )
     )
 
     override val root = find<ListMenuNavigationFragment>(rootFragmentArgs).root.apply {
         id = "list-menu-navigation-main-view"
     }
 
-    fun findNumberDisplayFragment(item: ListMenuItem): UIComponent {
+    fun findNumberDisplayFragment(index: Int): UIComponent {
         return find<NumberDisplayFragment>(
-                NumberDisplayFragment::digit to item.text!!.toInt()
+                NumberDisplayFragment::digit to index
         )
     }
 }
@@ -54,6 +55,10 @@ class NumberDisplayFragment : Fragment() {
         }
     }
 
+    init {
+        title = digit.toString()
+    }
+
     override fun onDock() {
         super.onDock()
         root.prefWidthProperty().bind(root.widthProperty())
@@ -65,6 +70,7 @@ class NumberDisplayFragment : Fragment() {
         root.prefWidthProperty().unbind()
         root.prefHeightProperty().unbind()
     }
+
 }
 
 class NumberDisplayConverter : Controller() {
