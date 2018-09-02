@@ -7,8 +7,12 @@ import javafx.scene.layout.StackPane
 import org.coner.worker.util.testfx.lookupAndQuery
 import org.testfx.api.FxRobot
 import tornadofx.*
+import javax.inject.Inject
 
-class ListMenuNavigationPage(val robot: FxRobot, vararg val parentNodes: Node) {
+class ListMenuNavigationPage @Inject constructor(
+        val robot: FxRobot,
+        vararg parentNodes: Node
+) {
 
     val root: Parent = robot.from(*parentNodes).lookupAndQuery(".list-menu-navigation-fragment")
     val scrollPane: ScrollPane = robot.from(root).lookupAndQuery(".scroll-pane")

@@ -1,5 +1,6 @@
 package org.coner.worker.widget
 
+import javafx.beans.property.SimpleIntegerProperty
 import javafx.geometry.Orientation
 import javafx.scene.Parent
 import javafx.scene.control.ScrollPane
@@ -14,6 +15,9 @@ class ListMenuNavigationFragment : Fragment() {
     private lateinit var selected: Parent
     private lateinit var listMenu: ListMenu
     val adapter: Adapter by param()
+    val activeItemIndexProperty = SimpleIntegerProperty()
+    var activeItemIndex by activeItemIndexProperty
+
 
     override val root = hbox {
         scrollpane(fitToWidth = true, fitToHeight = true) {
@@ -81,6 +85,7 @@ class ListMenuNavigationFragment : Fragment() {
                 selected = replacement.root
             }
         }
+        activeItemIndex = newIndex
     }
 
     data class Adapter(val count: Int, private val locator: (index: Int) -> UIComponent) {

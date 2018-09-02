@@ -16,6 +16,7 @@ class EstablishConnectionView : View() {
                     locator = this::locate
             )
     )
+    lateinit var listMenuNav: ListMenuNavigationFragment
 
     override val root = stackpane {
         id = "establish_connection"
@@ -28,7 +29,7 @@ class EstablishConnectionView : View() {
             opacity = 0.1
             isSmooth = true
         }
-        add(find<ListMenuNavigationFragment>(listMenuNavParams))
+        add(find<ListMenuNavigationFragment>(listMenuNavParams) { listMenuNav = this })
     }
 
     init {
