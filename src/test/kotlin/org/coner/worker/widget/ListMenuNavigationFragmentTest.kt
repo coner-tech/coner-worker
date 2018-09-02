@@ -58,4 +58,13 @@ class ListMenuNavigationFragmentTest {
         Thread.sleep(500)
         Assertions.assertThat(page.numberDisplayText()).hasText("Nine")
     }
+
+    @Test
+    fun itShouldSwitchDown() {
+        robot.clickOn(page.nav[9])
+        Thread.sleep(500)
+        robot.clickOn(page.nav[8])
+        Thread.sleep(500)
+        Assertions.assertThat(page.numberDisplayText()).hasText("Eight")
+    }
 }
