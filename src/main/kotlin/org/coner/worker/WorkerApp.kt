@@ -11,7 +11,7 @@ import org.coner.worker.screen.MainView
 import tornadofx.*
 import kotlin.reflect.KClass
 
-class WorkerApp : App(MainView::class, WorkerStylesheet::class) {
+open class WorkerApp : App(MainView::class, WorkerStylesheet::class) {
 
     val guice = Guice.createInjector(AppModule(), AetherModule())
 
