@@ -12,6 +12,6 @@ class SeasonsView : View() {
     }
 
     init {
-        title = "Seasons"
+        title = messages["title"]
     }
 }

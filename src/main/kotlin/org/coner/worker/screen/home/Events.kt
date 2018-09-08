@@ -12,6 +12,6 @@ class EventsView : View() {
     }
 
     init {
-        title = "Events"
+        title = messages["title"]
     }
 }
