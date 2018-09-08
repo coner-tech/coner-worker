@@ -8,6 +8,7 @@ import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import javafx.scene.shape.StrokeType
 import javafx.stage.WindowEvent
+import javafx.util.Duration
 import org.coner.worker.ConerLogoPalette
 import org.coner.worker.ConnectionPreferencesController
 import org.coner.worker.WorkerStylesheet
@@ -72,12 +73,13 @@ class MainCenterView : View() {
     override val root = stackpane { }
 
     init {
-        root.children.onChange { change ->
-            while (change.next()) {
-                if (change.wasAdded()) {
-                    val uiComponent = root.children.first().uiComponent<UIComponent>()!!
-                    titleProperty.unbind()
-                    titleProperty.bind(uiComponent.titleProperty)
+        root.children.onChange {
+            while (it.next()) {
+                if (it.list.size == 1) {
+                    val uiComponent = it.list.first().uiComponent<UIComponent>()
+                    if (uiComponent != null) {
+                        titleProperty.bind(uiComponent.titleProperty)
+                    }
                 }
             }
         }
@@ -111,7 +113,14 @@ class MainController : Controller() {
 
     fun navigateToHome() {
         val home = find<HomeView>()
-        find<MainCenterView>().root.children.first().replaceWith(home.root)
+        find<MainCenterView>().root.children.first().replaceWith(
+                replacement = home.root,
+                transition = ViewTransition.Metro(
+                        duration = Duration.millis(300.0),
+                        direction = ViewTransition.Direction.LEFT,
+                        distancePercentage = 0.33
+                )
+        )
     }
 
 }
