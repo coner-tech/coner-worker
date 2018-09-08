@@ -13,6 +13,7 @@ import org.coner.worker.ConnectionPreferencesController
 import org.coner.worker.WorkerStylesheet
 import org.coner.worker.controller.EasyModeController
 import org.coner.worker.screen.establish_connection.EstablishConnectionView
+import org.coner.worker.screen.home.HomeView
 import tornadofx.*
 
 class MainView : View() {
@@ -72,8 +73,13 @@ class MainCenterView : View() {
 
     init {
         root.children.onChange { change ->
-            val uiComponent = root.children.first().uiComponent<UIComponent>()!!
-            titleProperty.bind(uiComponent.titleProperty)
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    val uiComponent = root.children.first().uiComponent<UIComponent>()!!
+                    titleProperty.unbind()
+                    titleProperty.bind(uiComponent.titleProperty)
+                }
+            }
         }
     }
 
@@ -87,6 +93,9 @@ class MainController : Controller() {
     fun onViewInit() {
         if (!connectionPreferencesController.model.item.saved) {
             find<MainCenterView>().root.replaceChildren(find<EstablishConnectionView>())
+            connectionPreferencesController.model.itemProperty.onChangeOnce {
+                navigateToHome()
+            }
         } else {
             TODO("handle launch with config defined")
         }
@@ -98,6 +107,11 @@ class MainController : Controller() {
                 onConfirmed = { easyMode.stop() },
                 onCancelled = { windowEvent.consume() }
         )
+    }
+
+    fun navigateToHome() {
+        val home = find<HomeView>()
+        find<MainCenterView>().root.children.first().replaceWith(home.root)
     }
 
 }
