@@ -12,15 +12,20 @@ class HomeView : View() {
             )
     )
 
+    lateinit var listMenuNav: ListMenuNavigationFragment
+
     override val root = stackpane {
-        add(find<ListMenuNavigationFragment>(listMenuNavParams))
+        id = "home"
+        add(find<ListMenuNavigationFragment>(listMenuNavParams) {
+            listMenuNav = this
+        })
     }
 
     init {
         title = messages["title"]
     }
 
-    private fun locate(index: Int) = when(index) {
+    private fun locate(index: Int) = when (index) {
         0 -> find<EventsView>()
         1 -> find<SeasonsView>()
         else -> throw IllegalArgumentException()
