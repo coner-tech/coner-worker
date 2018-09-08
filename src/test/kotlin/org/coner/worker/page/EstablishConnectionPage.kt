@@ -1,30 +1,25 @@
 package org.coner.worker.page
 
 import javafx.scene.Node
-import javafx.scene.control.TabPane
 import org.testfx.api.FxRobot
+import tornadofx.*
 import javax.inject.Inject
 
 class EstablishConnectionPage @Inject constructor(
         val robot: FxRobot,
         val customPage: ConerCoreServiceConnectionDetailsPage,
-        val easyModePage: EasyModeConnectionPage
+        val easyModePage: EasyModeConnectionPage,
+        val listMenuNavigationPage: ListMenuNavigationPage
 ) {
     val root: Node = robot.lookup("#establish_connection").query()
-    val tabs: TabPane = robot.from(root).lookup("#tabs").query()
-    val easyModeTab: Node = robot.from(root).lookup("#easy-mode-tab").query()
-    val customTab: Node = robot.from(root).lookup("#custom-connection-tab").query()
+    val easyModeNav: ListMenuItem = listMenuNavigationPage.listItem(0)
+    val customNav: ListMenuItem = listMenuNavigationPage.listItem(1)
 
-    fun clickEasyModeTab() {
-        robot.clickOn(easyModeTab)
+    fun clickEasyModeNav() {
+        robot.clickOn(easyModeNav)
     }
 
-    fun clickCustomConnectionTab() {
-        robot.clickOn(customTab)
-    }
-
-    enum class Tabs(val index: Int) {
-        EasyMode(0),
-        Custom(1)
+    fun clickCustomConnectionNav() {
+        robot.clickOn(customNav)
     }
 }

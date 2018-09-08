@@ -1,15 +1,22 @@
 package org.coner.worker.screen.establish_connection
 
 import javafx.geometry.Rectangle2D
-import javafx.scene.control.TabPane
-import javafx.scene.layout.Priority
 import org.coner.worker.ConnectionPreferences
 import org.coner.worker.ConnectionPreferencesModel
+import org.coner.worker.widget.ListMenuNavigationFragment
 import tornadofx.*
 
 class EstablishConnectionView : View() {
 
     val controller: EstablishConnectionController by inject()
+
+    private val listMenuNavParams = mapOf(
+            ListMenuNavigationFragment::adapter to ListMenuNavigationFragment.Adapter(
+                    count = 2,
+                    locator = this::locate
+            )
+    )
+    lateinit var listMenuNav: ListMenuNavigationFragment
 
     override val root = stackpane {
         id = "establish_connection"
@@ -22,24 +29,18 @@ class EstablishConnectionView : View() {
             opacity = 0.1
             isSmooth = true
         }
-        vbox {
-            tabpane {
-                id = "tabs"
-                tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-                vgrow = Priority.ALWAYS
-                tab(find<EasyModeConnectionView>()) {
-                    id = "easy-mode-tab"
-                }
-                tab(find(CustomConnectionView::class)) {
-                    id = "custom-connection-tab"
-                }
-            }
-        }
+        add(find<ListMenuNavigationFragment>(listMenuNavParams) { listMenuNav = this })
     }
 
     init {
         title = messages["title"]
         controller.noOp()
+    }
+
+    private fun locate(index: Int) = when(index) {
+        0 -> find<EasyModeConnectionView>()
+        1 -> find<CustomConnectionView>()
+        else -> throw IllegalArgumentException()
     }
 
     override fun onDock() {

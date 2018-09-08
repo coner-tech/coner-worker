@@ -14,12 +14,12 @@ class ConerCoreServiceConnectionDetailsPage @Inject constructor(
         val robot: FxRobot
 ) {
 
-    val root: Node = robot.lookup("#custom_connection #coner_core").query()
-    val protocol: ChoiceBox<String> = robot.from(root).lookup("#protocol").query()
-    val applicationPort: TextField = robot.from(root).lookup("#application_port").query()
-    val adminPort: TextField = robot.from(root).lookup("#admin_port").query()
-    val host: TextField = robot.from(root).lookup("#host").query()
-    val connect: Button = robot.from(root).lookup("#connect").query()
+    val root by lazy { robot.lookup("#custom_connection #coner_core").query<Node>() }
+    val protocol by lazy { robot.from(root).lookup("#protocol").query<ChoiceBox<String>>() }
+    val applicationPort by lazy { robot.from(root).lookup("#application_port").query<TextField>() }
+    val adminPort by lazy { robot.from(root).lookup("#admin_port").query<TextField>() }
+    val host by lazy { robot.from(root).lookup("#host").query<TextField>() }
+    val connect by lazy { robot.from(root).lookup("#connect").query<Button>() }
     val realisticValues = RealisticValues(
             applicationUri = URI("http://localhost:8080"),
             adminUri = URI("http://localhost:8081")

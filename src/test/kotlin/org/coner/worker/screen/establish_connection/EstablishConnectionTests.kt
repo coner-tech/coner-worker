@@ -2,6 +2,7 @@ package org.coner.worker.screen.establish_connection
 
 import com.authzee.kotlinguice4.getInstance
 import com.google.inject.Guice
+import com.google.inject.Injector
 import io.mockk.mockk
 import io.mockk.verify
 import org.coner.worker.di.PageModule
@@ -18,7 +19,7 @@ class EstablishConnectionViewTest {
     lateinit var view: EstablishConnectionView
     lateinit var page: EstablishConnectionPage
 
-    val injector = Guice.createInjector(PageModule())
+    lateinit var injector: Injector
 
     @Before
     fun before() {
@@ -30,7 +31,12 @@ class EstablishConnectionViewTest {
         }
         FxToolkit.setupApplication { app }
         view = stage.uiComponent()!!
-        page = injector.getInstance()
+        injector = Guice.createInjector(PageModule(
+                navigationMenuParents = arrayOf(view.root)
+        ))
+        FX.runAndWait {
+            page = injector.getInstance()
+        }
     }
 
     @After
@@ -46,25 +52,23 @@ class EstablishConnectionViewTest {
     }
 
     @Test
-    fun itShouldHaveEasyModeTab() {
-        page.clickEasyModeTab()
+    fun itShouldHaveEasyModeNav() {
+        page.clickEasyModeNav()
 
-        Assertions.assertThat(page.tabs.selectionModel.selectedIndex)
-                .isEqualTo(EstablishConnectionPage.Tabs.EasyMode.index)
+        Assertions.assertThat(view.listMenuNav.activeItemIndex).isEqualTo(0)
     }
 
     @Test
-    fun itShouldHaveCustomConnectionTab() {
-        page.clickCustomConnectionTab()
+    fun itShouldHaveCustomConnectionNav() {
+        page.clickCustomConnectionNav()
 
-        Assertions.assertThat(page.tabs.selectionModel.selectedIndex)
-                .isEqualTo(EstablishConnectionPage.Tabs.Custom.index)
+        Assertions.assertThat(view.listMenuNav.activeItemIndex).isEqualTo(1)
     }
 
     @Test
     fun itShouldTraversePages() {
-        page.clickCustomConnectionTab()
+        page.clickCustomConnectionNav()
         page.robot.clickOn(page.customPage.adminPort)
-        page.clickEasyModeTab()
+        page.clickEasyModeNav()
     }
 }
