@@ -49,16 +49,18 @@ class WorkerAppIT {
         verifyThat("#establish_connection", isVisible())
     }
 
-    @Test
+    @Test(timeout = 20000)
     fun itShouldNavigateToHomeWhenEasyModeConnects() {
         val robot = FxRobot()
         val easyModePage = EasyModeConnectionPage(robot)
+        println("Clicking use button")
         easyModePage.clickUseButton()
 
         var matched = false
         var homePage: HomePage? = null
         while (!matched) {
             try {
+                println("Trying to look up #home")
                 homePage = HomePage(
                         robot,
                         ListMenuNavigationPage(
@@ -67,13 +69,18 @@ class WorkerAppIT {
                         )
                 )
                 matched = true
+                println("Found #home")
             } catch (t: Throwable) {
-                Thread.sleep(160)
+                println("#home not found, waiting a second...")
+                Thread.sleep(1000)
                 continue
             }
         }
+        println("Verifying visibility of home root")
         Assertions.assertThat(homePage?.root).isVisible
+        println("Closing current window")
         robot.closeCurrentWindow()
+        println("Clicking OK (because easy mode started)")
         robot.clickOn("OK")
     }
 
