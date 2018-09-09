@@ -54,6 +54,9 @@ class WorkerAppIT {
         val robot = FxRobot()
         val easyModePage = EasyModeConnectionPage(robot)
         println("Clicking use button")
+        Assertions.assertThat(easyModePage.useButton)
+                .isEnabled
+                .isVisible
         easyModePage.clickUseButton()
 
         var matched = false
