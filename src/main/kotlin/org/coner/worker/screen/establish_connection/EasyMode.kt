@@ -52,7 +52,7 @@ class EasyModeConnectionView : View() {
             id = "use_wrapper"
             alignment = Pos.CENTER
             button(messages["use_easy_mode"]) {
-                id = "button"
+                id = "use_easy_mode_button"
                 isDefaultButton = true
                 action {
                     println("use easy mode button action")
