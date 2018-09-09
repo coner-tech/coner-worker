@@ -49,7 +49,7 @@ class WorkerAppIT {
         verifyThat("#establish_connection", isVisible())
     }
 
-    @Test(timeout = 20000)
+    @Test(timeout = 120000)
     fun itShouldNavigateToHomeWhenEasyModeConnects() {
         val robot = FxRobot()
         val easyModePage = EasyModeConnectionPage(robot)
