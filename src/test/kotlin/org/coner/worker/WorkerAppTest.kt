@@ -15,7 +15,7 @@ import org.testfx.api.FxToolkit
 import org.testfx.assertions.api.Assertions
 import org.testfx.matcher.base.NodeMatchers.isVisible
 
-class WorkerAppIT {
+class WorkerAppTest {
 
     lateinit var app: WorkerApp
     @Rule
