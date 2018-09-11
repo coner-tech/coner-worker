@@ -84,7 +84,17 @@ class WorkerAppTest {
         println("Closing current window")
         robot.closeCurrentWindow()
         println("Clicking OK (because easy mode started)")
-        robot.clickOn("OK")
+        matched = false
+        while (!matched) {
+            try {
+                val ok = robot.lookup("OK").queryButton()
+                robot.clickOn(ok)
+                matched = true
+            } catch (t: Throwable) {
+                Thread.sleep(1000)
+                continue
+            }
+        }
     }
 
 }
