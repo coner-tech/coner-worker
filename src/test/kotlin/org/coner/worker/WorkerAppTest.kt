@@ -81,20 +81,6 @@ class WorkerAppTest {
         }
         println("Verifying visibility of home root")
         Assertions.assertThat(homePage?.root).isVisible
-        println("Closing current window")
-        robot.closeCurrentWindow()
-        println("Clicking OK (because easy mode started)")
-        matched = false
-        while (!matched) {
-            try {
-                val ok = robot.lookup("OK").queryButton()
-                robot.clickOn(ok)
-                matched = true
-            } catch (t: Throwable) {
-                Thread.sleep(1000)
-                continue
-            }
-        }
     }
 
 }

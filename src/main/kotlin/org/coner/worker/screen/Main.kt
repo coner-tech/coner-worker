@@ -56,6 +56,11 @@ class MainView : View() {
         controller.onViewInit()
     }
 
+    override fun onUndock() {
+        super.onUndock()
+        controller.stopEasyMode()
+    }
+
     fun showCloseRequestConfirmation(onConfirmed: () -> Unit, onCancelled: () -> Unit) {
         alert(
                 type = Alert.AlertType.CONFIRMATION,
@@ -121,6 +126,12 @@ class MainController : Controller() {
                         distancePercentage = 0.33
                 )
         )
+    }
+
+    fun stopEasyMode() {
+        if (easyMode.model.started) {
+            easyMode.stop()
+        }
     }
 
 }
