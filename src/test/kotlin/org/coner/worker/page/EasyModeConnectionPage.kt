@@ -13,12 +13,7 @@ class EasyModeConnectionPage @Inject constructor(
 
     val root by lazy { robot.lookupAndQuery<Node>("#easy_mode_connection") }
     val useWrapper by lazy { robot.lookupAndQuery<Node>("#use_wrapper") }
-    val useButton by lazy {
-        println(">>> lazy init useButton")
-        val button = robot.from(useWrapper).lookup("#use_easy_mode_button").queryButton()
-        println("<<< lazy init useButton")
-        button
-    }
+    val useButton by lazy { robot.from(useWrapper).lookup("#use_easy_mode_button").queryButton() }
     val progressWrapper by lazy { robot.from(root).lookupAndQuery<Node>("#progress_wrapper") }
     val progressIndicator by lazy { robot.from(progressWrapper).lookupAndQuery<ProgressIndicator>("#indicator") }
     val progressLabel by lazy { robot.from(progressWrapper).lookupAndQuery<Label>("#label") }
@@ -28,9 +23,7 @@ class EasyModeConnectionPage @Inject constructor(
     val progressNodes = arrayOf(progressWrapper, progressIndicator, progressLabel, progressStartStep)
 
     fun clickUseButton() {
-        println(">>> clickUseButton()")
         robot.clickOn(useButton)
-        println("<<< clickUseButton()")
     }
 
 }

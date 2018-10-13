@@ -55,19 +55,14 @@ class EasyModeConnectionView : View() {
                 id = "use_easy_mode_button"
                 isDefaultButton = true
                 action {
-                    println("use easy mode button action")
                     model.useEasyModeTask = runAsync {
-                        println("calling controller.useEasyMode()")
                         controller.useEasyMode()
-                        println("done with controller.useEasyMode()")
                     } success {
                         model.useEasyModeTask = null
-                        println("calling controller.onUseEasyModeSuccess")
                         controller.onUseEasyModeSuccess()
                     } fail {
                         log.log(Level.SEVERE, "failed to use easy mode", it)
                         model.useEasyModeTask = null
-                        println("calling controller.onUseEasyModeFail(it)")
                         controller.onUseEasyModeFail(it)
                     }
                 }
