@@ -7,6 +7,7 @@ import javafx.util.StringConverter
 import org.coner.worker.ConnectionPreferences
 import org.coner.worker.controller.EasyModeController
 import tornadofx.*
+import java.util.logging.Level
 
 class EasyModeConnectionController : Controller() {
     val model: EasyModeConnectionModel by inject()
@@ -51,7 +52,7 @@ class EasyModeConnectionView : View() {
             id = "use_wrapper"
             alignment = Pos.CENTER
             button(messages["use_easy_mode"]) {
-                id = "button"
+                id = "use_easy_mode_button"
                 isDefaultButton = true
                 action {
                     model.useEasyModeTask = runAsync {
@@ -60,6 +61,7 @@ class EasyModeConnectionView : View() {
                         model.useEasyModeTask = null
                         controller.onUseEasyModeSuccess()
                     } fail {
+                        log.log(Level.SEVERE, "failed to use easy mode", it)
                         model.useEasyModeTask = null
                         controller.onUseEasyModeFail(it)
                     }

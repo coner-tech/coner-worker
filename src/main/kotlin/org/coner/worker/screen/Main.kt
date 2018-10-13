@@ -8,11 +8,13 @@ import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import javafx.scene.shape.StrokeType
 import javafx.stage.WindowEvent
+import javafx.util.Duration
 import org.coner.worker.ConerLogoPalette
 import org.coner.worker.ConnectionPreferencesController
 import org.coner.worker.WorkerStylesheet
 import org.coner.worker.controller.EasyModeController
 import org.coner.worker.screen.establish_connection.EstablishConnectionView
+import org.coner.worker.screen.home.HomeView
 import tornadofx.*
 
 class MainView : View() {
@@ -54,6 +56,11 @@ class MainView : View() {
         controller.onViewInit()
     }
 
+    override fun onUndock() {
+        super.onUndock()
+        controller.stopEasyMode()
+    }
+
     fun showCloseRequestConfirmation(onConfirmed: () -> Unit, onCancelled: () -> Unit) {
         alert(
                 type = Alert.AlertType.CONFIRMATION,
@@ -71,9 +78,15 @@ class MainCenterView : View() {
     override val root = stackpane { }
 
     init {
-        root.children.onChange { change ->
-            val uiComponent = root.children.first().uiComponent<UIComponent>()!!
-            titleProperty.bind(uiComponent.titleProperty)
+        root.children.onChange {
+            while (it.next()) {
+                if (it.list.size == 1) {
+                    val uiComponent = it.list.first().uiComponent<UIComponent>()
+                    if (uiComponent != null) {
+                        titleProperty.bind(uiComponent.titleProperty)
+                    }
+                }
+            }
         }
     }
 
@@ -87,6 +100,9 @@ class MainController : Controller() {
     fun onViewInit() {
         if (!connectionPreferencesController.model.item.saved) {
             find<MainCenterView>().root.replaceChildren(find<EstablishConnectionView>())
+            connectionPreferencesController.model.itemProperty.onChangeOnce {
+                navigateToHome()
+            }
         } else {
             TODO("handle launch with config defined")
         }
@@ -98,6 +114,24 @@ class MainController : Controller() {
                 onConfirmed = { easyMode.stop() },
                 onCancelled = { windowEvent.consume() }
         )
+    }
+
+    fun navigateToHome() {
+        val home = find<HomeView>()
+        find<MainCenterView>().root.children.first().replaceWith(
+                replacement = home.root,
+                transition = ViewTransition.Metro(
+                        duration = Duration.millis(300.0),
+                        direction = ViewTransition.Direction.LEFT,
+                        distancePercentage = 0.33
+                )
+        )
+    }
+
+    fun stopEasyMode() {
+        if (easyMode.model.started) {
+            easyMode.stop()
+        }
     }
 
 }
