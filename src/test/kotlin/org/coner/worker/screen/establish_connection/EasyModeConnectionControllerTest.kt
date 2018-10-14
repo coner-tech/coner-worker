@@ -23,7 +23,7 @@ class EasyModeConnectionControllerTest {
     @Before
     fun before() {
         val app = App()
-        with (app.scope) {
+        with(app.scope) {
             set(mockk<EasyModeConnectionView>(name = "view", relaxed = true))
             set(mockk<EasyModeController>(name = "easyMode", relaxed = true))
         }
@@ -68,5 +68,38 @@ class EasyModeConnectionControllerTest {
 
         verify { easyMode.stop() }
         verify { view.showUseEasyModeError(throwable) }
+    }
+
+    @Test
+    fun whenOfferWrongConnectionPreferenceItShouldIgnore() {
+        val wrong = ConnectionPreferences().apply {
+            mode = ConnectionPreferences.Mode.CUSTOM
+        }
+
+        val actual = controller.offer(wrong)
+
+        assertThat(actual).isInstanceOf(SpecificEstablishConnectionController.OfferResult.Ignored::class.java)
+        assertThat(controller.model.connectionPreferences).isNull()
+    }
+
+    @Test
+    fun whenOfferRightConnectionPreferenceItShouldClaim() {
+        val right = ConnectionPreferences().apply {
+            mode = ConnectionPreferences.Mode.EASY
+        }
+
+        val actual = controller.offer(right)
+
+        assertThat(actual).isInstanceOf(SpecificEstablishConnectionController.OfferResult.Claimed::class.java)
+        assertThat(controller.model.connectionPreferences).isSameAs(right)
+    }
+
+    @Test
+    fun whenConnectConnectionPreferencesItShouldPassToView() {
+        val connectionPreferences: ConnectionPreferences = mockk()
+
+        controller.connect(connectionPreferences)
+
+        verify { controller.view.onClickUseEasyModeButton() }
     }
 }
