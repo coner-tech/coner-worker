@@ -98,13 +98,9 @@ class MainController : Controller() {
     val easyMode: EasyModeController by inject()
 
     fun onViewInit() {
-        if (!connectionPreferencesController.model.item.saved) {
-            find<MainCenterView>().root.replaceChildren(find<EstablishConnectionView>())
-            connectionPreferencesController.model.itemProperty.onChangeOnce {
-                navigateToHome()
-            }
-        } else {
-            TODO("handle launch with config defined")
+        find<MainCenterView>().root.replaceChildren(find<EstablishConnectionView>())
+        connectionPreferencesController.model.itemProperty.onChange {
+            navigateToHome()
         }
     }
 

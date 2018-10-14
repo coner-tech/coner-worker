@@ -2,7 +2,7 @@ package org.coner.worker.screen.establish_connection
 
 import javafx.geometry.Rectangle2D
 import org.coner.worker.ConnectionPreferences
-import org.coner.worker.ConnectionPreferencesModel
+import org.coner.worker.ConnectionPreferencesController
 import org.coner.worker.widget.ListMenuNavigationFragment
 import tornadofx.*
 
@@ -37,15 +37,20 @@ class EstablishConnectionView : View() {
         controller.noOp()
     }
 
-    private fun locate(index: Int) = when(index) {
+    private fun locate(index: Int) = when (index) {
         0 -> find<EasyModeConnectionView>()
         1 -> find<CustomConnectionView>()
         else -> throw IllegalArgumentException()
     }
 
+    fun navigateTo(index: Int) {
+        find<ListMenuNavigationFragment>(listMenuNavParams).navigateTo(index)
+    }
+
     override fun onDock() {
         super.onDock()
         controller.startListeningForConnectionPreferences()
+        controller.offerConnectionPreferencesToSpecificEstablishConnectionControllers()
 
     }
 
@@ -57,9 +62,19 @@ class EstablishConnectionView : View() {
 
 class EstablishConnectionController : Controller() {
 
-    val connectionPreferencesModel: ConnectionPreferencesModel by inject()
+    val connectionPreferencesController: ConnectionPreferencesController by inject()
+    val easyModeConnectionController: EasyModeConnectionController by inject()
     val easyModeConnectionModel: EasyModeConnectionModel by inject()
+    val customConnectionController: CustomConnectionController by inject()
     val customConnectionModel: CustomConnectionModel by inject()
+    val view: EstablishConnectionView by inject()
+
+    val specificConnectionControllers by lazy {
+        arrayOf<SpecificEstablishConnectionController>(
+                easyModeConnectionController,
+                customConnectionController
+        )
+    }
 
     fun noOp() {
         // no-op
@@ -76,7 +91,42 @@ class EstablishConnectionController : Controller() {
         customConnectionModel.connectionPreferencesProperty.removeListener(onConnectionPreferencesChanged)
     }
 
-    val onConnectionPreferencesChanged = ChangeListener<ConnectionPreferences> { observable, oldValue, newValue ->
-        connectionPreferencesModel.item = newValue
+    fun offerConnectionPreferencesToSpecificEstablishConnectionControllers() {
+        val connectionPreferences = connectionPreferencesController.model.item ?: return
+        for ((index, controller) in specificConnectionControllers.withIndex()) {
+            val result = controller.offer(connectionPreferences)
+            if (result is SpecificEstablishConnectionController.OfferResult.Claimed) {
+                runLater {
+                    view.navigateTo(index)
+                    if (connectionPreferences.saved) {
+                        controller.connect(connectionPreferences)
+                    }
+                }
+                break
+            }
+        }
     }
+
+    val onConnectionPreferencesChanged = ChangeListener<ConnectionPreferences> { observable, oldValue, newValue ->
+        connectionPreferencesController.model.item = newValue
+    }
+}
+
+interface SpecificEstablishConnectionController {
+    /**
+     * Offer connection preferences to a specific controller. Implementations will inspect the argument and decide
+     * whether to claim or ignore it. When a specific controller claims a connection preference, it should update its view
+     * accordingly. The parent view will navigate to the view associated with the specific controller.
+     */
+    fun offer(connectionPreferences: ConnectionPreferences): OfferResult
+
+    sealed class OfferResult {
+        class Claimed : OfferResult()
+        class Ignored : OfferResult()
+    }
+
+    /**
+     * Specific controllers will receive this call when they have claimed a saved connection preference
+     */
+    fun connect(connectionPreferences: ConnectionPreferences)
 }

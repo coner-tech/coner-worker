@@ -17,9 +17,15 @@ import org.coner.worker.ConnectionPreferences
 import tornadofx.*
 import java.net.URI
 
-class CustomConnectionController : Controller() {
-
+class CustomConnectionController : Controller(), SpecificEstablishConnectionController {
     val model: CustomConnectionModel by inject()
+    val view: CustomConnectionView by inject()
+
+    init {
+        model.connectionPreferencesProperty.onChange {
+            model.updateFromConnectionPreferences()
+        }
+    }
 
     fun connect(attempt: AttemptCustomConerCoreConnection) {
         // request health
@@ -54,6 +60,19 @@ class CustomConnectionController : Controller() {
     fun onConnectFail(spec: AttemptCustomConerCoreConnection) {
         // no-op
     }
+
+    override fun offer(connectionPreferences: ConnectionPreferences): SpecificEstablishConnectionController.OfferResult {
+        return if (connectionPreferences.mode == ConnectionPreferences.Mode.CUSTOM) {
+            model.connectionPreferences = connectionPreferences
+            SpecificEstablishConnectionController.OfferResult.Claimed()
+        } else {
+            SpecificEstablishConnectionController.OfferResult.Ignored()
+        }
+    }
+
+    override fun connect(connectionPreferences: ConnectionPreferences) {
+        view.onClickConnectButton()
+    }
 }
 
 class CustomConnectionModel : ViewModel() {
@@ -83,6 +102,13 @@ class CustomConnectionModel : ViewModel() {
         host = appUri.host
         applicationPort = appUri.port
         adminPort = adminUri.port
+    }
+
+    fun updateFromConnectionPreferences() {
+        protocol = connectionPreferences.conerCoreServiceUrl.scheme
+        host = connectionPreferences.conerCoreServiceUrl.host
+        applicationPort = connectionPreferences.conerCoreServiceUrl.port
+        adminPort = connectionPreferences.conerCoreAdminUrl.port
     }
 }
 
@@ -139,21 +165,7 @@ class CustomConnectionView : View() {
                     id = "connect"
                     isDefaultButton = true
                     enableWhen { model.valid }
-                    action {
-                        val spec = AttemptCustomConerCoreConnection(
-                                applicationUri = model.applicationBaseUrl.get()!!,
-                                adminUri = model.adminBaseUrl.get()!!
-                        )
-                        runAsyncWithProgress {
-                            controller.connect(spec)
-                        } success {
-                            controller.onConnectSuccess(spec)
-                            alert(Alert.AlertType.INFORMATION, "Connected")
-                        } fail {
-                            controller.onConnectFail(spec)
-                            alert(Alert.AlertType.ERROR, "Failed to connect")
-                        }
-                    }
+                    action { onClickConnectButton() }
                 }
             }
         }
@@ -161,6 +173,25 @@ class CustomConnectionView : View() {
 
     init {
         title = messages["title"]
+    }
+
+    override fun onDock() {
+        super.onDock()
+    }
+
+    fun onClickConnectButton() {
+        val spec = AttemptCustomConerCoreConnection(
+                applicationUri = model.applicationBaseUrl.get()!!,
+                adminUri = model.adminBaseUrl.get()!!
+        )
+        runAsync {
+            controller.connect(spec)
+        } success {
+            controller.onConnectSuccess(spec)
+        } fail {
+            controller.onConnectFail(spec)
+            alert(Alert.AlertType.ERROR, "Failed to connect")
+        }
     }
 }
 

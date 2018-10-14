@@ -9,7 +9,7 @@ import org.coner.worker.controller.EasyModeController
 import tornadofx.*
 import java.util.logging.Level
 
-class EasyModeConnectionController : Controller() {
+class EasyModeConnectionController : Controller(), SpecificEstablishConnectionController {
     val model: EasyModeConnectionModel by inject()
     val view: EasyModeConnectionView by inject()
     val easyMode: EasyModeController by inject()
@@ -26,6 +26,19 @@ class EasyModeConnectionController : Controller() {
     fun onUseEasyModeFail(throwable: Throwable) {
         easyMode.stop()
         view.showUseEasyModeError(throwable)
+    }
+
+    override fun offer(connectionPreferences: ConnectionPreferences): SpecificEstablishConnectionController.OfferResult {
+        return if (connectionPreferences.mode == ConnectionPreferences.Mode.EASY) {
+            model.connectionPreferences = connectionPreferences
+            SpecificEstablishConnectionController.OfferResult.Claimed()
+        } else {
+            SpecificEstablishConnectionController.OfferResult.Ignored()
+        }
+    }
+
+    override fun connect(connectionPreferences: ConnectionPreferences) {
+        view.onClickUseEasyModeButton()
     }
 }
 
@@ -54,18 +67,7 @@ class EasyModeConnectionView : View() {
             button(messages["use_easy_mode"]) {
                 id = "use_easy_mode_button"
                 isDefaultButton = true
-                action {
-                    model.useEasyModeTask = runAsync {
-                        controller.useEasyMode()
-                    } success {
-                        model.useEasyModeTask = null
-                        controller.onUseEasyModeSuccess()
-                    } fail {
-                        log.log(Level.SEVERE, "failed to use easy mode", it)
-                        model.useEasyModeTask = null
-                        controller.onUseEasyModeFail(it)
-                    }
-                }
+                action { onClickUseEasyModeButton() }
             }
             visibleWhen { model.useEasyModeTaskProperty.isNull }
         }
@@ -111,7 +113,21 @@ class EasyModeConnectionView : View() {
         }
     }
 
+    fun onClickUseEasyModeButton() {
+        model.useEasyModeTask = runAsync {
+            controller.useEasyMode()
+        } success {
+            model.useEasyModeTask = null
+            controller.onUseEasyModeSuccess()
+        } fail {
+            log.log(Level.SEVERE, "failed to use easy mode", it)
+            model.useEasyModeTask = null
+            controller.onUseEasyModeFail(it)
+        }
+    }
+
     inner class StartStepStringConverter : StringConverter<EasyModeController.StartStep>() {
+
         override fun toString(startStep: EasyModeController.StartStep?): String {
             return when (startStep) {
                 EasyModeController.StartStep.RESOLVE -> messages["use_easy_mode_progress_step_resolve"]
@@ -124,6 +140,5 @@ class EasyModeConnectionView : View() {
         override fun fromString(string: String?): EasyModeController.StartStep {
             throw UnsupportedOperationException()
         }
-
     }
 }

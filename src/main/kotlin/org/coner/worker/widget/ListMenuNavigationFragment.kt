@@ -57,6 +57,11 @@ class ListMenuNavigationFragment : Fragment() {
         listMenu.activeItemProperty.removeListener(activeItemChangedListener)
     }
 
+    fun navigateTo(index: Int) {
+        listMenu.activeItem = listMenu.items[index]
+        listMenu.requestLayout()
+    }
+
     private val activeItemChangedListener = ChangeListener<ListMenuItem?> { observable, oldValue, newValue ->
         if (oldValue == newValue) return@ChangeListener
         val oldIndex = listMenu.items.indexOf(oldValue)
