@@ -157,6 +157,7 @@ class EstablishConnectionControllerTest {
 
         controller.offerConnectionPreferencesToSpecificEstablishConnectionControllers()
 
+        latch.await()
         verify { controller.view.navigateTo(1) }
         verify { controller.customConnectionController.connect(connectionPreferences) }
     }
