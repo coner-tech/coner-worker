@@ -62,7 +62,7 @@ class ConnectionPreferences(
     }
     val savedProperty = SimpleBooleanProperty(this, "saved")
     var saved by savedProperty
-    val modeProperty = SimpleObjectProperty<Mode?>(this, "mode")
+    val modeProperty = SimpleObjectProperty<Mode>(this, "mode")
     var mode by modeProperty
     val conerCoreServiceUrlProperty = SimpleObjectProperty<URI>(this, "conerCoreServiceUrl")
     var conerCoreServiceUrl by conerCoreServiceUrlProperty

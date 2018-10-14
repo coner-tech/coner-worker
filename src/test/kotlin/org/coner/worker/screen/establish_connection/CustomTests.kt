@@ -135,7 +135,7 @@ class CustomConnectionViewTest {
     @Test
     fun itShouldAttemptToConnectWhenClickConnect() {
         val latch = CountDownLatch(1)
-        every { view.controller.connect(any()) }.answers { latch.countDown() }
+        every { view.controller.connect(any<AttemptCustomConerCoreConnection>()) }.answers { latch.countDown() }
         view.model.fillRealisticValues()
 
         page.connect()
@@ -152,7 +152,7 @@ class CustomConnectionViewTest {
     @Test
     fun itShouldNotifyControllerWhenConnectSucceeds() {
         val latch = CountDownLatch(2)
-        every { view.controller.connect(any()) }.answers { latch.countDown() }
+        every { view.controller.connect(any<AttemptCustomConerCoreConnection>()) }.answers { latch.countDown() }
         every { view.controller.onConnectSuccess(any()) }.answers { latch.countDown() }
         view.model.fillRealisticValues()
 
@@ -169,7 +169,7 @@ class CustomConnectionViewTest {
     @Test
     fun itShouldNotifyControllerWhenConnectFails() {
         val latch = CountDownLatch(1)
-        every { view.controller.connect(any()) }.throws(ApiException())
+        every { view.controller.connect(any<AttemptCustomConerCoreConnection>()) }.throws(ApiException())
         every { view.controller.onConnectFail(any()) }.answers { latch.countDown() }
         view.model.fillRealisticValues()
 
